@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Principal - AgroTechNova</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../public/css/dashboard.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <img src="../images/logo.png" alt="Logo">
+      <h2>AgroTechNova</h2>
+    </div>
+
+    <div class="menu">
+      <a href="agregar-proyecto.html"><i class="fas fa-plus"></i> Agregar Proyecto</a>
+      <a href="ver-proyectos.html"><i class="fas fa-folder-open"></i> Ver Proyectos</a>
+      <a href="agendaReuniones.html"><i class="fas fa-calendar-check"></i> Programar Reuniones</a>
+    </div>
+  </aside>
+
+  <!-- Fondo oscuro -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="main">
+    <h1>¡Bienvenido, <span id="usuarioNombre">Usuario</span>! </h1>
+    <p>Nos alegra tenerte de nuevo en AgroTechNova</p>
+
+    <section class="destacado">
+      <h2> Innovación para el campo</h2>
+      <p>En AgroTechNova impulsamos el desarrollo agroindustrial mediante tecnología, asesoría y proyectos sostenibles que buscan mejorar la productividad y el bienestar de las comunidades rurales.</p>
+    </section>
+
+    <section class="asesoramiento">
+      <h2> Solicita Asesoramiento</h2>
+      <p>Nuestro equipo de expertos está listo para ayudarte a planificar, gestionar y optimizar tus proyectos agroindustriales.</p>
+      <a href="asesoramiento.html" class="btn-asesoria">Solicitar Asesoría</a>
+    </section>
+
+  </main>
+
+  <script>
+    const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+    document.getElementById('usuarioNombre').textContent = nombreUsuario;
+
+    function cerrarSesion() {
+      localStorage.removeItem('nombreUsuario');
+      window.location.href = 'login.html';
+    }
+
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>

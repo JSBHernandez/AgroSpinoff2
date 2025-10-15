@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda de Reuniones - AgroTechNova</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../public/css/agendaReuniones.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container header-container">
+      <div class="logo">
+        <img src="../images/logo.png" alt="AgroTechNova Logo">
+        <h1>AgroTechNova</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sección Agenda -->
+  <section class="agenda-section">
+    <div class="container" style="position: relative;">
+
+      <a href="dashboard.html" class="volver-btn">Volver</a>
+
+      <div class="section-title">
+        <h2>Agenda de Reuniones</h2>
+        <p>Programa y organiza tus reuniones con los asesores de AgroTechNova.</p>
+      </div>
+
+      <div class="agenda-grid">
+        <div class="agenda-card">
+          <h3>Programar nueva reunión</h3>
+          <form id="formReunion">
+            <input type="text" id="asesor" placeholder="Nombre del asesor" required>
+            <input type="date" id="fecha" required>
+            <input type="time" id="hora" required>
+            <textarea id="tema" placeholder="Tema o descripción" required></textarea>
+            <button type="submit">Agendar</button>
+          </form>
+        </div>
+
+        <div class="agenda-card reuniones-lista">
+          <h3>Reuniones Programadas</h3>
+          <ul id="listaReuniones"></ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById('formReunion');
+    const lista = document.getElementById('listaReuniones');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const asesor = document.getElementById('asesor').value;
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+      const tema = document.getElementById('tema').value;
+
+      const item = document.createElement('li');
+      item.textContent = `${fecha} ${hora} - ${asesor}: ${tema}`;
+      lista.appendChild(item);
+
+      form.reset();
+      alert('Reunión agendada correctamente.');
+    });
+  </script>
+
+</body>
+</html>
