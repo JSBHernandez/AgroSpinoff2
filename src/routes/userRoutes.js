@@ -53,8 +53,8 @@ function handleUserRoutes(pathname, method, req, res) {
   if (getUserMatch && method === 'GET') {
     const userId = getUserMatch[1];
     runMiddleware(AuthMiddleware.requireAuth, req, res, () => {
-      // Verificar que sea admin o el propio usuario
-      if (req.session.rol !== 'admin' && req.session.userId !== parseInt(userId)) {
+      // Verificar que sea administrador o el propio usuario
+      if (req.session.rol !== 'administrador' && req.session.userId !== parseInt(userId)) {
         res.writeHead(403, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Acceso denegado' }));
         return;

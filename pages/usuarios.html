@@ -291,7 +291,7 @@
           return;
         }
 
-        if (data.user.rol !== 'admin') {
+        if (data.user.rol !== 'administrador') {
           mostrarMensaje('Acceso denegado. Solo administradores.', 'error');
           setTimeout(() => window.location.href = 'dashboard.html', 2000);
           return;

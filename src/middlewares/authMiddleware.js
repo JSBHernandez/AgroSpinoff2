@@ -50,7 +50,7 @@ class AuthMiddleware {
 
   /**
    * Middleware: Requiere rol de administrador
-   * Solo permite acceso a usuarios con rol "admin"
+   * Solo permite acceso a usuarios con rol "administrador"
    */
   static requireAdmin(req, res, next) {
     const session = AuthMiddleware.extractSession(req);
@@ -64,7 +64,7 @@ class AuthMiddleware {
       return;
     }
 
-    if (session.rol !== 'admin') {
+    if (session.rol !== 'administrador') {
       res.writeHead(403, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ 
         error: 'Acceso denegado',
