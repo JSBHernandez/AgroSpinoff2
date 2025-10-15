@@ -15,6 +15,13 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
+// Importar configuración de base de datos y rutas
+const Database = require('./src/db/database');
+const { initDatabase } = require('./src/db/migrations');
+const handleAuthRoutes = require('./src/routes/authRoutes');
+const handleUserRoutes = require('./src/routes/userRoutes');
+const { startSessionCleaner } = require('./src/utils/sessionManager');
+
 // Configuración del servidor
 const PORT = process.env.PORT || 3000;
 const HOST = '127.0.0.1';
@@ -59,29 +66,41 @@ function serveStaticFile(filePath, res) {
 
 /**
  * Función para manejar rutas API
- * En futuros sprints, aquí se importarán los módulos de /src/routes
  * @param {object} req - Objeto de solicitud HTTP
  * @param {object} res - Objeto de respuesta HTTP
  */
 function handleAPIRoutes(req, res) {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
+  const method = req.method;
 
-  // Ejemplo de estructura para futuros endpoints
-  // Las rutas se agregarán en cada sprint según sea necesario
+  // Habilitar CORS para desarrollo (eliminar en producción)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  if (pathname.startsWith('/api/')) {
-    // En Sprint 1: se agregarán rutas de autenticación
-    // En Sprint 2: se agregarán rutas de proyectos
-    // En Sprint 3: se agregarán rutas de recursos
-    // etc.
-
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
+  // Manejar preflight OPTIONS
+  if (method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
     return;
   }
 
-  return false; // No es una ruta API
+  // Rutas de autenticación (/api/auth/*)
+  if (pathname.startsWith('/api/auth/')) {
+    handleAuthRoutes(pathname, method, req, res);
+    return;
+  }
+
+  // Rutas de usuarios (/api/users/* y /api/roles)
+  if (pathname.startsWith('/api/users/') || pathname === '/api/users' || pathname === '/api/roles') {
+    handleUserRoutes(pathname, method, req, res);
+    return;
+  }
+
+  // Ruta API no encontrada
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
 }
 
 /**
@@ -99,9 +118,17 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Ruta raíz -> redirigir a página principal
+  // Redirecciones amigables para páginas comunes
   if (pathname === '/') {
     pathname = '/pages/Pagina.html';
+  } else if (pathname === '/login' || pathname === '/login.html') {
+    pathname = '/pages/login.html';
+  } else if (pathname === '/register' || pathname === '/register.html') {
+    pathname = '/pages/register.html';
+  } else if (pathname === '/dashboard' || pathname === '/dashboard.html') {
+    pathname = '/pages/dashboard.html';
+  } else if (pathname === '/usuarios' || pathname === '/usuarios.html') {
+    pathname = '/pages/usuarios.html';
   }
 
   // Construir ruta del archivo
@@ -121,19 +148,52 @@ const server = http.createServer((req, res) => {
 });
 
 /**
- * Iniciar el servidor
+ * Inicializar base de datos y arrancar servidor
  */
-server.listen(PORT, HOST, () => {
-  console.log('='.repeat(50));
-  console.log('🚀 SERVIDOR AGROTECHNOVA INICIADO');
-  console.log('='.repeat(50));
-  console.log(`📡 Servidor corriendo en: http://${HOST}:${PORT}`);
-  console.log(`📂 Directorio base: ${__dirname}`);
-  console.log(`⏰ Hora de inicio: ${new Date().toLocaleString()}`);
-  console.log('='.repeat(50));
-  console.log('Presiona CTRL+C para detener el servidor');
-  console.log('='.repeat(50));
-});
+async function startServer() {
+  try {
+    console.log('🔧 Inicializando base de datos...');
+    
+    // Inicializar base de datos SQLite
+    await Database.initialize();
+    await initDatabase();
+    
+    console.log('✅ Base de datos lista');
+
+    // Iniciar limpiador de sesiones (cada 15 minutos)
+    startSessionCleaner();
+    console.log('✅ Limpiador de sesiones activo');
+
+    // Iniciar servidor HTTP
+    server.listen(PORT, HOST, () => {
+      console.log('='.repeat(50));
+      console.log('🚀 SERVIDOR AGROTECHNOVA INICIADO');
+      console.log('='.repeat(50));
+      console.log(`📡 Servidor corriendo en: http://${HOST}:${PORT}`);
+      console.log(`📂 Directorio base: ${__dirname}`);
+      console.log(`⏰ Hora de inicio: ${new Date().toLocaleString()}`);
+      console.log('='.repeat(50));
+      console.log('📋 ENDPOINTS DISPONIBLES:');
+      console.log('   POST /api/auth/login');
+      console.log('   POST /api/auth/logout');
+      console.log('   GET  /api/auth/session');
+      console.log('   POST /api/auth/forgot-password');
+      console.log('   GET  /api/users (admin)');
+      console.log('   POST /api/users (admin)');
+      console.log('   GET  /api/roles (autenticado)');
+      console.log('='.repeat(50));
+      console.log('Presiona CTRL+C para detener el servidor');
+      console.log('='.repeat(50));
+    });
+
+  } catch (error) {
+    console.error('❌ Error al iniciar servidor:', error);
+    process.exit(1);
+  }
+}
+
+// Iniciar servidor
+startServer();
 
 /**
  * Manejo de cierre del servidor
@@ -141,6 +201,7 @@ server.listen(PORT, HOST, () => {
 process.on('SIGINT', () => {
   console.log('\n\n🛑 Cerrando servidor...');
   server.close(() => {
+    Database.close();
     console.log('✅ Servidor cerrado correctamente');
     process.exit(0);
   });
@@ -149,6 +210,7 @@ process.on('SIGINT', () => {
 process.on('SIGTERM', () => {
   console.log('\n\n🛑 Señal SIGTERM recibida, cerrando servidor...');
   server.close(() => {
+    Database.close();
     console.log('✅ Servidor cerrado correctamente');
     process.exit(0);
   });
