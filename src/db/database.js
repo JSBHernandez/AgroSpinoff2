@@ -129,6 +129,15 @@ class Database {
   }
 
   /**
+   * Obtiene la instancia de base de datos SQLite
+   * Método requerido por modelos para compatibilidad
+   * @returns {sqlite3.Database} Instancia de la base de datos
+   */
+  getDatabase() {
+    return this.db;
+  }
+
+  /**
    * Ejecuta múltiples consultas en una transacción
    * @param {function} callback - Función con las operaciones a ejecutar
    * @returns {Promise}

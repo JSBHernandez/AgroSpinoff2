@@ -1,0 +1,8 @@
+﻿1.1 Login|PASS|Status 200, Session created
+1.2 Session Verification|PASS|Session valid
+2.1 Get Categories (RF23)|FAIL|Expected 4 categories, got 
+3.1 Create Project (RF41)|PASS|Project created with ID 
+4.1 List Projects|PASS|2 projects found
+7.1 Date Validation (RF41)|PASS|Correctly rejected invalid dates
+8.1 Search by Name (RF62)|PASS|Search returned 2 results
+8.2 Search by Status (RF62)|PASS|Search returned 0 results

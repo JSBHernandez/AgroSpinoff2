@@ -8,23 +8,6 @@ const UserController = require('../controllers/userController');
 const AuthMiddleware = require('../middlewares/authMiddleware');
 
 /**
- * Ejecuta middleware de forma manual (sin next callback estándar)
- */
-function runMiddleware(middleware, req, res, callback) {
-  let nextCalled = false;
-  
-  const next = () => {
-    nextCalled = true;
-    callback();
-  };
-
-  middleware(req, res, next);
-  
-  // Si no se llamó next(), el middleware ya respondió (error de auth)
-  return nextCalled;
-}
-
-/**
  * Maneja las rutas de usuarios
  * @param {string} pathname - Ruta solicitada
  * @param {string} method - Método HTTP
@@ -34,17 +17,15 @@ function runMiddleware(middleware, req, res, callback) {
 function handleUserRoutes(pathname, method, req, res) {
   // GET /api/users - Lista todos los usuarios (solo admin)
   if (pathname === '/api/users' && method === 'GET') {
-    runMiddleware(AuthMiddleware.requireAdmin, req, res, () => {
-      UserController.list(req, res);
-    });
+    if (!AuthMiddleware.requireAdmin(req, res)) return;
+    UserController.list(req, res);
     return;
   }
 
   // POST /api/users - Crear usuario (solo admin)
   if (pathname === '/api/users' && method === 'POST') {
-    runMiddleware(AuthMiddleware.requireAdmin, req, res, () => {
-      UserController.create(req, res);
-    });
+    if (!AuthMiddleware.requireAdmin(req, res)) return;
+    UserController.create(req, res);
     return;
   }
 
@@ -52,15 +33,15 @@ function handleUserRoutes(pathname, method, req, res) {
   const getUserMatch = pathname.match(/^\/api\/users\/(\d+)$/);
   if (getUserMatch && method === 'GET') {
     const userId = getUserMatch[1];
-    runMiddleware(AuthMiddleware.requireAuth, req, res, () => {
-      // Verificar que sea administrador o el propio usuario
-      if (req.session.rol !== 'administrador' && req.session.userId !== parseInt(userId)) {
-        res.writeHead(403, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Acceso denegado' }));
-        return;
-      }
-      UserController.getById(req, res, userId);
-    });
+    if (!AuthMiddleware.requireAuth(req, res)) return;
+    
+    // Verificar que sea administrador o el propio usuario
+    if (req.session.rol !== 'administrador' && req.session.userId !== parseInt(userId)) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Acceso denegado' }));
+      return;
+    }
+    UserController.getById(req, res, userId);
     return;
   }
 
@@ -68,9 +49,8 @@ function handleUserRoutes(pathname, method, req, res) {
   const updateUserMatch = pathname.match(/^\/api\/users\/(\d+)$/);
   if (updateUserMatch && method === 'PUT') {
     const userId = updateUserMatch[1];
-    runMiddleware(AuthMiddleware.requireAdmin, req, res, () => {
-      UserController.update(req, res, userId);
-    });
+    if (!AuthMiddleware.requireAdmin(req, res)) return;
+    UserController.update(req, res, userId);
     return;
   }
 
@@ -78,9 +58,8 @@ function handleUserRoutes(pathname, method, req, res) {
   const statusMatch = pathname.match(/^\/api\/users\/(\d+)\/status$/);
   if (statusMatch && method === 'PATCH') {
     const userId = statusMatch[1];
-    runMiddleware(AuthMiddleware.requireAdmin, req, res, () => {
-      UserController.changeStatus(req, res, userId);
-    });
+    if (!AuthMiddleware.requireAdmin(req, res)) return;
+    UserController.changeStatus(req, res, userId);
     return;
   }
 
@@ -88,17 +67,15 @@ function handleUserRoutes(pathname, method, req, res) {
   const passwordMatch = pathname.match(/^\/api\/users\/(\d+)\/password$/);
   if (passwordMatch && method === 'PATCH') {
     const userId = passwordMatch[1];
-    runMiddleware(AuthMiddleware.requireAdmin, req, res, () => {
-      UserController.changePassword(req, res, userId);
-    });
+    if (!AuthMiddleware.requireAdmin(req, res)) return;
+    UserController.changePassword(req, res, userId);
     return;
   }
 
   // GET /api/roles - Obtener todos los roles (autenticado)
   if (pathname === '/api/roles' && method === 'GET') {
-    runMiddleware(AuthMiddleware.requireAuth, req, res, () => {
-      UserController.getRoles(req, res);
-    });
+    if (!AuthMiddleware.requireAuth(req, res)) return;
+    UserController.getRoles(req, res);
     return;
   }
 

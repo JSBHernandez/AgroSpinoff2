@@ -84,13 +84,9 @@
           localStorage.setItem('emailUsuario', data.user.email);
           localStorage.setItem('rolUsuario', data.user.rol);
 
-          // Redirigir según el rol
+          // Redirigir al dashboard principal para todos los usuarios
           setTimeout(() => {
-            if (data.user.rol === 'administrador') {
-              window.location.href = 'usuarios.html'; // Panel de administración
-            } else {
-              window.location.href = 'dashboard.html'; // Dashboard normal
-            }
+            window.location.href = 'dashboard.html';
           }, 500);
 
         } else {

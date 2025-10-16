@@ -20,6 +20,9 @@ const Database = require('./src/db/database');
 const { initDatabase } = require('./src/db/migrations');
 const handleAuthRoutes = require('./src/routes/authRoutes');
 const handleUserRoutes = require('./src/routes/userRoutes');
+const { handleProjectRoutes } = require('./src/routes/projectRoutes');
+const { handlePhaseRoutes } = require('./src/routes/phaseRoutes');
+const { handleMilestoneRoutes } = require('./src/routes/milestoneRoutes');
 const { startSessionCleaner } = require('./src/utils/sessionManager');
 
 // Configuración del servidor
@@ -98,6 +101,26 @@ function handleAPIRoutes(req, res) {
     return;
   }
 
+  // Rutas de proyectos (/api/projects/*)
+  if (pathname.startsWith('/api/projects')) {
+    handleProjectRoutes(req, res);
+    return;
+  }
+
+  // Rutas de fases (/api/phases/* o /api/projects/:id/phases)
+  if (pathname.startsWith('/api/phases') || pathname.match(/\/api\/projects\/\d+\/(phases|progress)/)) {
+    handlePhaseRoutes(req, res);
+    return;
+  }
+
+  // Rutas de hitos (/api/milestones/* o /api/phases/:id/milestones o /api/projects/:id/milestones)
+  if (pathname.startsWith('/api/milestones') || 
+      pathname.match(/\/api\/phases\/\d+\/milestones/) ||
+      pathname.match(/\/api\/projects\/\d+\/(milestones|stats)/)) {
+    handleMilestoneRoutes(req, res);
+    return;
+  }
+
   // Ruta API no encontrada
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
@@ -129,6 +152,22 @@ const server = http.createServer((req, res) => {
     pathname = '/pages/dashboard.html';
   } else if (pathname === '/usuarios' || pathname === '/usuarios.html') {
     pathname = '/pages/usuarios.html';
+  } else if (pathname === '/proyectos' || pathname === '/proyectos.html') {
+    pathname = '/pages/proyectos.html';
+  } else if (pathname === '/fases' || pathname === '/fases.html') {
+    pathname = '/pages/fases.html';
+  } else if (pathname === '/hitos' || pathname === '/hitos.html') {
+    pathname = '/pages/hitos.html';
+  } else if (pathname === '/agendaReuniones' || pathname === '/agendaReuniones.html') {
+    pathname = '/pages/agendaReuniones.html';
+  } else if (pathname === '/contacto' || pathname === '/contacto.html') {
+    pathname = '/pages/contacto.html';
+  } else if (pathname === '/mision-vision' || pathname === '/mision-vision.html') {
+    pathname = '/pages/mision-vision.html';
+  } else if (pathname === '/objetivos' || pathname === '/objetivos.html') {
+    pathname = '/pages/objetivos.html';
+  } else if (pathname === '/servicios' || pathname === '/servicios.html') {
+    pathname = '/pages/servicios.html';
   }
 
   // Construir ruta del archivo

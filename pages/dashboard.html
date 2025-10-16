@@ -17,9 +17,18 @@
     </div>
 
     <div class="menu">
-      <a href="agregar-proyecto.html"><i class="fas fa-plus"></i> Agregar Proyecto</a>
-      <a href="ver-proyectos.html"><i class="fas fa-folder-open"></i> Ver Proyectos</a>
-      <a href="agendaReuniones.html"><i class="fas fa-calendar-check"></i> Programar Reuniones</a>
+      <!-- Sprint 1: Gestión de Usuarios -->
+      <a href="usuarios.html" id="menuUsuarios"><i class="fas fa-users"></i> Gestión de Usuarios</a>
+      
+      <!-- Sprint 2: Gestión de Proyectos -->
+      <a href="proyectos.html"><i class="fas fa-project-diagram"></i> Gestión de Proyectos</a>
+      
+      <!-- Otras funcionalidades -->
+      <a href="agendaReuniones.html"><i class="fas fa-calendar-check"></i> Agenda de Reuniones</a>
+      <a href="contacto.html"><i class="fas fa-envelope"></i> Contacto</a>
+      <a href="mision-vision.html"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+      <a href="objetivos.html"><i class="fas fa-tasks"></i> Objetivos</a>
+      <a href="servicios.html"><i class="fas fa-briefcase"></i> Servicios</a>
     </div>
   </aside>
 
@@ -38,25 +47,66 @@
     <p>Nos alegra tenerte de nuevo en AgroTechNova</p>
 
     <section class="destacado">
-      <h2> Innovación para el campo</h2>
-      <p>En AgroTechNova impulsamos el desarrollo agroindustrial mediante tecnología, asesoría y proyectos sostenibles que buscan mejorar la productividad y el bienestar de las comunidades rurales.</p>
+      <h2>🚀 Funcionalidades Disponibles</h2>
+      <div class="cards-container">
+        <div class="card" onclick="window.location.href='usuarios.html'">
+          <i class="fas fa-users fa-3x"></i>
+          <h3>Gestión de Usuarios</h3>
+          <p>Administra usuarios, roles y permisos del sistema</p>
+        </div>
+        
+        <div class="card" onclick="window.location.href='proyectos.html'">
+          <i class="fas fa-project-diagram fa-3x"></i>
+          <h3>Gestión de Proyectos</h3>
+          <p>Crea y administra proyectos, fases e hitos</p>
+        </div>
+        
+        <div class="card" onclick="window.location.href='agendaReuniones.html'">
+          <i class="fas fa-calendar-check fa-3x"></i>
+          <h3>Agenda de Reuniones</h3>
+          <p>Programa y gestiona reuniones del equipo</p>
+        </div>
+      </div>
     </section>
 
     <section class="asesoramiento">
-      <h2> Solicita Asesoramiento</h2>
+      <h2>💡 Innovación para el campo</h2>
+      <p>En AgroTechNova impulsamos el desarrollo agroindustrial mediante tecnología, asesoría y proyectos sostenibles que buscan mejorar la productividad y el bienestar de las comunidades rurales.</p>
       <p>Nuestro equipo de expertos está listo para ayudarte a planificar, gestionar y optimizar tus proyectos agroindustriales.</p>
-      <a href="asesoramiento.html" class="btn-asesoria">Solicitar Asesoría</a>
     </section>
 
   </main>
 
   <script>
+    // Obtener datos del usuario desde localStorage
     const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+    const rolUsuario = localStorage.getItem('rolUsuario') || 'productor';
+    
     document.getElementById('usuarioNombre').textContent = nombreUsuario;
 
+    // Mostrar/ocultar opción de Gestión de Usuarios según el rol
+    const menuUsuarios = document.getElementById('menuUsuarios');
+    if (rolUsuario !== 'administrador') {
+      menuUsuarios.style.display = 'none';
+    }
+
     function cerrarSesion() {
-      localStorage.removeItem('nombreUsuario');
-      window.location.href = 'login.html';
+      // Llamar al endpoint de logout
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      }).then(() => {
+        localStorage.removeItem('nombreUsuario');
+        localStorage.removeItem('emailUsuario');
+        localStorage.removeItem('rolUsuario');
+        window.location.href = 'login.html';
+      }).catch(() => {
+        // Aunque falle, limpiar localStorage y redirigir
+        localStorage.removeItem('nombreUsuario');
+        localStorage.removeItem('emailUsuario');
+        localStorage.removeItem('rolUsuario');
+        window.location.href = 'login.html';
+      });
     }
 
     const menuBtn = document.getElementById('menuBtn');

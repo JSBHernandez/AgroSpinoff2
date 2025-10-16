@@ -226,3 +226,50 @@ body {
 .overlay.active {
   display: block;
 }
+
+/* Cards Container */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.card {
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(8px);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.card:hover {
+  background: rgba(255,255,255,0.35);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  border-color: var(--primary);
+}
+
+.card i {
+  color: var(--primary);
+  margin-bottom: 15px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  margin: 0;
+}

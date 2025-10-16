@@ -30,8 +30,9 @@ class AuthMiddleware {
   /**
    * Middleware: Requiere autenticación
    * Verifica que el usuario tenga una sesión activa
+   * @returns {boolean} true si está autenticado, false si no (y envía respuesta de error)
    */
-  static requireAuth(req, res, next) {
+  static requireAuth(req, res) {
     const session = AuthMiddleware.extractSession(req);
 
     if (!session) {
@@ -40,19 +41,20 @@ class AuthMiddleware {
         error: 'No autenticado',
         message: 'Debe iniciar sesión para acceder a este recurso'
       }));
-      return;
+      return false;
     }
 
     // Agregar información de sesión al request
     req.session = session;
-    next();
+    return true;
   }
 
   /**
    * Middleware: Requiere rol de administrador
    * Solo permite acceso a usuarios con rol "administrador"
+   * @returns {boolean} true si es admin, false si no (y envía respuesta de error)
    */
-  static requireAdmin(req, res, next) {
+  static requireAdmin(req, res) {
     const session = AuthMiddleware.extractSession(req);
 
     if (!session) {
@@ -61,7 +63,7 @@ class AuthMiddleware {
         error: 'No autenticado',
         message: 'Debe iniciar sesión para acceder a este recurso'
       }));
-      return;
+      return false;
     }
 
     if (session.rol !== 'administrador') {
@@ -70,42 +72,43 @@ class AuthMiddleware {
         error: 'Acceso denegado',
         message: 'No tiene permisos para realizar esta acción'
       }));
-      return;
+      return false;
     }
 
     req.session = session;
-    next();
+    return true;
   }
 
   /**
    * Middleware: Requiere roles específicos
+   * @param {object} req - Request object
+   * @param {object} res - Response object
    * @param {Array<string>} allowedRoles - Roles permitidos
+   * @returns {boolean} true si tiene uno de los roles permitidos, false si no
    */
-  static requireRoles(...allowedRoles) {
-    return (req, res, next) => {
-      const session = AuthMiddleware.extractSession(req);
+  static requireRoles(req, res, ...allowedRoles) {
+    const session = AuthMiddleware.extractSession(req);
 
-      if (!session) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          error: 'No autenticado',
-          message: 'Debe iniciar sesión para acceder a este recurso'
-        }));
-        return;
-      }
+    if (!session) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        error: 'No autenticado',
+        message: 'Debe iniciar sesión para acceder a este recurso'
+      }));
+      return false;
+    }
 
-      if (!allowedRoles.includes(session.rol)) {
-        res.writeHead(403, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          error: 'Acceso denegado',
-          message: 'No tiene permisos para realizar esta acción'
-        }));
-        return;
-      }
+    if (!allowedRoles.includes(session.rol)) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        error: 'Acceso denegado',
+        message: 'No tiene permisos para realizar esta acción'
+      }));
+      return false;
+    }
 
-      req.session = session;
-      next();
-    };
+    req.session = session;
+    return true;
   }
 }
 
