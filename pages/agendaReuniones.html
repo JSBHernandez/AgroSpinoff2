@@ -5,53 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agenda de Reuniones - AgroTechNova</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="../public/css/agendaReuniones.css">
+  <link rel="stylesheet" href="../public/css/base.css">
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="container header-container">
-      <div class="logo">
-        <img src="../images/logo.png" alt="AgroTechNova Logo">
-        <h1>AgroTechNova</h1>
+  <div class="container">
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>📅 Agenda de Reuniones</h1>
+        <div class="user-info">
+          <span id="usuarioNombre">Administrador</span>
+          <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
       </div>
-    </div>
-  </header>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="agendaReuniones.html" class="active">Agenda</a>
+      </nav>
+    </header>
 
-  <!-- Sección Agenda -->
-  <section class="agenda-section">
-    <div class="container" style="position: relative;">
+    <!-- Sección Agenda -->
+    <section style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px;">
+      <h2 style="color: #2e7d32; margin-bottom: 10px;">📋 Gestión de Reuniones</h2>
+      <p style="color: #666; margin-bottom: 30px;">Programa y organiza tus reuniones con los asesores de AgroTechNova.</p>
 
-      <a href="dashboard.html" class="volver-btn">Volver</a>
-
-      <div class="section-title">
-        <h2>Agenda de Reuniones</h2>
-        <p>Programa y organiza tus reuniones con los asesores de AgroTechNova.</p>
-      </div>
-
-      <div class="agenda-grid">
-        <div class="agenda-card">
-          <h3>Programar nueva reunión</h3>
-          <form id="formReunion">
-            <input type="text" id="asesor" placeholder="Nombre del asesor" required>
-            <input type="date" id="fecha" required>
-            <input type="time" id="hora" required>
-            <textarea id="tema" placeholder="Tema o descripción" required></textarea>
-            <button type="submit">Agendar</button>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div style="background: #f5f5f5; padding: 25px; border-radius: 8px;">
+          <h3 style="color: #2e7d32; margin-bottom: 20px;">Programar nueva reunión</h3>
+          <form id="formReunion" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" id="asesor" placeholder="Nombre del asesor" required style="padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            <input type="date" id="fecha" required style="padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            <input type="time" id="hora" required style="padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            <textarea id="tema" placeholder="Tema o descripción" required style="padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; min-height: 100px; resize: vertical; font-family: inherit;"></textarea>
+            <button type="submit" class="btn-primary" style="padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Agendar Reunión</button>
           </form>
         </div>
 
-        <div class="agenda-card reuniones-lista">
-          <h3>Reuniones Programadas</h3>
-          <ul id="listaReuniones"></ul>
+        <div style="background: #f5f5f5; padding: 25px; border-radius: 8px;">
+          <h3 style="color: #2e7d32; margin-bottom: 20px;">Reuniones Programadas</h3>
+          <ul id="listaReuniones" style="list-style: none; padding: 0; margin: 0;"></ul>
+          <p id="emptyMessage" style="color: #999; text-align: center; padding: 20px;">No hay reuniones programadas</p>
         </div>
       </div>
+    </section>
+  </div>
 
-    </div>
-  </section>
+  <style>
+    #listaReuniones li {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border-left: 4px solid #4caf50;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    #listaReuniones:empty + #emptyMessage {
+      display: block;
+    }
+
+    #listaReuniones:not(:empty) + #emptyMessage {
+      display: none;
+    }
+  </style>
 
   <script>
+    // Obtener datos del usuario desde localStorage
+    const nombreUsuario = localStorage.getItem('nombreUsuario') || 'Usuario';
+    document.getElementById('usuarioNombre').textContent = nombreUsuario;
+
+    function cerrarSesion() {
+      fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      }).then(() => {
+        localStorage.removeItem('nombreUsuario');
+        localStorage.removeItem('emailUsuario');
+        localStorage.removeItem('rolUsuario');
+        window.location.href = 'login.html';
+      }).catch(() => {
+        localStorage.removeItem('nombreUsuario');
+        localStorage.removeItem('emailUsuario');
+        localStorage.removeItem('rolUsuario');
+        window.location.href = 'login.html';
+      });
+    }
+
     const form = document.getElementById('formReunion');
     const lista = document.getElementById('listaReuniones');
 
@@ -63,11 +106,15 @@
       const tema = document.getElementById('tema').value;
 
       const item = document.createElement('li');
-      item.textContent = `${fecha} ${hora} - ${asesor}: ${tema}`;
+      item.innerHTML = `
+        <div style="margin-bottom: 5px;"><strong>📅 ${fecha}</strong> a las <strong>${hora}</strong></div>
+        <div style="margin-bottom: 5px;"><strong>👤 Asesor:</strong> ${asesor}</div>
+        <div style="color: #666;"><strong>📝 Tema:</strong> ${tema}</div>
+      `;
       lista.appendChild(item);
 
       form.reset();
-      alert('Reunión agendada correctamente.');
+      alert('✅ Reunión agendada correctamente');
     });
   </script>
 

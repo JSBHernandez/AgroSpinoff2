@@ -4,28 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recursos - AgroTechNova</title>
-  <link rel="stylesheet" href="../public/css/recursos.css">
+  <link rel="stylesheet" href="../public/css/base.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="navbar-brand">AgroTechNova</div>
-    <div class="navbar-menu">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" id="logoutBtn">Cerrar sesión</a>
-    </div>
-  </nav>
-
   <div class="container">
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>🔧 Gestión de Recursos</h1>
+        <div class="user-info">
+          <span>Administrador</span>
+          <button onclick="document.getElementById('logoutBtn').click()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="#" class="active">Recursos</a>
+      </nav>
+    </header>
+
+    <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <a href="dashboard.html">Dashboard</a> &gt;
-      <span id="breadcrumbProject">Proyecto</span> &gt;
+      <a href="dashboard.html">Dashboard</a>
+      <span>›</span>
+      <a href="proyectos.html">Proyectos</a>
+      <span>›</span>
+      <span id="breadcrumbProject">Proyecto</span>
+      <span>›</span>
       <span>Recursos</span>
     </div>
 
-    <div class="header">
-      <h1>Gestión de Recursos</h1>
-      <button class="btn btn-primary" id="btnNuevoRecurso">+ Nuevo Recurso</button>
-    </div>
+    <!-- Botón de acción -->
+    <section style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <button class="btn-primary" id="btnNuevoRecurso">➕ Nuevo Recurso</button>
+    </section>
 
     <div class="stats-cards">
       <div class="card">

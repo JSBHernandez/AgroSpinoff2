@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Fases - AgroTechnova</title>
-    <link rel="stylesheet" href="../public/css/fases.css">
+    <link rel="stylesheet" href="../public/css/base.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header con navegación unificada -->
         <header>
             <div class="header-content">
                 <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
@@ -21,15 +21,21 @@
             <nav>
                 <a href="dashboard.html">Dashboard</a>
                 <a href="proyectos.html">Proyectos</a>
-                <a href="fases.html" class="active">Fases</a>
+                <a href="usuarios.html">Usuarios</a>
+                <a href="#" class="active">Fases</a>
             </nav>
         </header>
 
-        <!-- Breadcrumb y Info del Proyecto -->
-        <section class="breadcrumb">
-            <a href="proyectos.html">← Proyectos</a> / 
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="dashboard.html">Dashboard</a>
+            <span>›</span>
+            <a href="proyectos.html">Proyectos</a>
+            <span>›</span>
             <span id="projectName">Cargando...</span>
-        </section>
+            <span>›</span>
+            <span>Fases</span>
+        </div>
 
         <!-- Progreso del Proyecto (RF13) -->
         <section class="progress-section">

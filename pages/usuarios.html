@@ -4,146 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Usuarios - AgroTechNova</title>
-  <link rel="stylesheet" href="../public/css/dashboard.css">
+  <link rel="stylesheet" href="../public/css/base.css">
   <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #e0e0e0;
-    }
-
-    .header h1 {
-      color: #1e3c72;
-      margin: 0;
-    }
-
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s;
-    }
-
-    .btn-primary {
-      background: #4CAF50;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #45a049;
-    }
-
-    .btn-secondary {
-      background: #2196F3;
-      color: white;
-    }
-
-    .btn-danger {
-      background: #f44336;
-      color: white;
-    }
-
-    .btn-warning {
-      background: #ff9800;
-      color: white;
-    }
-
-    .btn-logout {
-      background: #9e9e9e;
-      color: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    thead {
-      background: #1e3c72;
-      color: white;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    tbody tr:hover {
-      background: #f5f5f5;
-    }
-
-    .badge {
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
+    /* Badges específicos de roles */
     .badge-admin {
       background: #ff5722;
       color: white;
     }
 
     .badge-asesor {
-      background: #2196F3;
+      background: #2196f3;
       color: white;
     }
 
     .badge-productor {
-      background: #4CAF50;
+      background: #4caf50;
       color: white;
     }
 
-    .badge-activo {
-      background: #4CAF50;
-      color: white;
-    }
-
-    .badge-inactivo {
-      background: #f44336;
-      color: white;
-    }
-
+    /* Mensajes */
     .mensaje {
       padding: 15px;
       margin: 15px 0;
       border-radius: 5px;
       display: none;
+      border-left: 4px solid;
     }
 
     .mensaje-exito {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-color: #2e7d32;
     }
 
     .mensaje-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background: #ffebee;
+      color: #c62828;
+      border-color: #c62828;
     }
 
     .modal {
@@ -202,36 +99,52 @@
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <div>
-        <h1>🔧 Gestión de Usuarios</h1>
-        <p id="usuario-info" style="color: #666; margin: 5px 0 0 0;"></p>
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>👥 Gestión de Usuarios</h1>
+        <div class="user-info">
+          <span id="usuarioNombre">Administrador</span>
+          <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
       </div>
-      <div>
-        <button class="btn btn-primary" onclick="abrirModalCrear()">+ Crear Usuario</button>
-        <button class="btn btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
-      </div>
-    </div>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html" class="active">Usuarios</a>
+        <a href="agendaReuniones.html">Agenda</a>
+      </nav>
+    </header>
+
+    <!-- Sección de Acciones -->
+    <section style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <button class="btn-primary" onclick="abrirModalCrear()">➕ Crear Usuario</button>
+    </section>
 
     <div id="mensaje" class="mensaje"></div>
 
-    <div class="loader" id="loader">Cargando usuarios...</div>
+    <!-- Sección de Usuarios -->
+    <section>
+      <h2>📋 Lista de Usuarios</h2>
+      <div class="loader" id="loader">Cargando usuarios...</div>
 
-    <table id="tabla-usuarios" style="display: none;">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Estado</th>
-          <th>Último Acceso</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="usuarios-body">
-      </tbody>
-    </table>
+      <table id="tabla-usuarios" style="display: none;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Último Acceso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usuarios-body">
+        </tbody>
+      </table>
+    </section>
   </div>
 
   <!-- Modal Crear/Editar Usuario -->
@@ -297,8 +210,8 @@
           return;
         }
 
-        document.getElementById('usuario-info').textContent = 
-          `Administrador: ${data.user.nombre} (${data.user.email})`;
+        // Solo mostrar el nombre del usuario, sin email
+        document.getElementById('usuarioNombre').textContent = data.user.nombre;
 
         // Cargar datos
         await cargarRoles();

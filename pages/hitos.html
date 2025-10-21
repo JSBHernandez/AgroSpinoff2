@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Hitos - AgroTechnova</title>
-    <link rel="stylesheet" href="../public/css/hitos.css">
+    <link rel="stylesheet" href="../public/css/base.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
+        <!-- Header con navegación unificada -->
         <header>
             <div class="header-content">
                 <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
@@ -21,17 +21,21 @@
             <nav>
                 <a href="dashboard.html">Dashboard</a>
                 <a href="proyectos.html">Proyectos</a>
-                <a href="#" onclick="goToPhases()" id="navFases">Fases</a>
-                <a href="hitos.html" class="active">Hitos</a>
+                <a href="usuarios.html">Usuarios</a>
+                <a href="#" class="active">Hitos</a>
             </nav>
         </header>
 
         <!-- Breadcrumb -->
-        <section class="breadcrumb">
-            <a href="proyectos.html">← Proyectos</a> / 
-            <a href="#" onclick="goToPhases()" id="projectLink">Fases</a> / 
+        <div class="breadcrumb">
+            <a href="dashboard.html">Dashboard</a>
+            <span>›</span>
+            <a href="proyectos.html">Proyectos</a>
+            <span>›</span>
+            <a href="#" onclick="goToPhases()" id="projectLink">Fases</a>
+            <span>›</span>
             <span id="phaseName">Cargando...</span>
-        </section>
+        </div>
 
         <!-- Estadísticas de Hitos (RF25) -->
         <section class="stats-section">
