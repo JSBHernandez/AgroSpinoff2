@@ -242,6 +242,9 @@
                     <td>${formatDate(project.fecha_fin)}</td>
                     <td class="actions">
                         <button onclick="viewPhases(${project.id})" class="btn-action" title="Ver Fases">📅</button>
+                        <button onclick="window.location.href='recursos.html?proyecto_id=${project.id}'" class="btn-action" title="Recursos" style="background-color: #17a2b8;">🔧</button>
+                        <button onclick="window.location.href='presupuestos.html?proyecto_id=${project.id}'" class="btn-action" title="Presupuesto" style="background-color: #28a745;">💰</button>
+                        <button onclick="window.location.href='gastos.html?proyecto_id=${project.id}'" class="btn-action" title="Gastos" style="background-color: #dc3545;">📊</button>
                         <button onclick="editProject(${project.id})" class="btn-action" title="Editar" 
                             ${!canEdit(project.estado) ? 'disabled' : ''}>✏️</button>
                         <button onclick="deleteProject(${project.id})" class="btn-action btn-danger" title="Eliminar"

@@ -86,11 +86,23 @@ function isValidEstado(estado) {
   return validEstados.includes(estado);
 }
 
+/**
+ * Valida que un valor sea un número positivo
+ * 
+ * @param {any} value - Valor a validar
+ * @returns {boolean}
+ */
+function isPositiveNumber(value) {
+  const num = parseFloat(value);
+  return !isNaN(num) && num > 0;
+}
+
 module.exports = {
   isValidEmail,
   isNotEmpty,
   sanitizeString,
   isValidId,
   isValidRole,
-  isValidEstado
+  isValidEstado,
+  isPositiveNumber
 };

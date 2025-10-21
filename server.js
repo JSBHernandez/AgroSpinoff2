@@ -23,6 +23,9 @@ const handleUserRoutes = require('./src/routes/userRoutes');
 const { handleProjectRoutes } = require('./src/routes/projectRoutes');
 const { handlePhaseRoutes } = require('./src/routes/phaseRoutes');
 const { handleMilestoneRoutes } = require('./src/routes/milestoneRoutes');
+const handleResourceRoutes = require('./src/routes/resourceRoutes');
+const handleBudgetRoutes = require('./src/routes/budgetRoutes');
+const handleExpenseRoutes = require('./src/routes/expenseRoutes');
 const { startSessionCleaner } = require('./src/utils/sessionManager');
 
 // Configuración del servidor
@@ -121,6 +124,27 @@ function handleAPIRoutes(req, res) {
     return;
   }
 
+  // Rutas de recursos (/api/resources/*)
+  if (pathname.startsWith('/api/resources')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleResourceRoutes(req, res, urlParts);
+    return;
+  }
+
+  // Rutas de presupuesto (/api/budget/*)
+  if (pathname.startsWith('/api/budget')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleBudgetRoutes(req, res, urlParts);
+    return;
+  }
+
+  // Rutas de gastos (/api/expenses/*)
+  if (pathname.startsWith('/api/expenses')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleExpenseRoutes(req, res, urlParts);
+    return;
+  }
+
   // Ruta API no encontrada
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
@@ -158,6 +182,12 @@ const server = http.createServer((req, res) => {
     pathname = '/pages/fases.html';
   } else if (pathname === '/hitos' || pathname === '/hitos.html') {
     pathname = '/pages/hitos.html';
+  } else if (pathname === '/recursos' || pathname === '/recursos.html') {
+    pathname = '/pages/recursos.html';
+  } else if (pathname === '/presupuestos' || pathname === '/presupuestos.html') {
+    pathname = '/pages/presupuestos.html';
+  } else if (pathname === '/gastos' || pathname === '/gastos.html') {
+    pathname = '/pages/gastos.html';
   } else if (pathname === '/agendaReuniones' || pathname === '/agendaReuniones.html') {
     pathname = '/pages/agendaReuniones.html';
   } else if (pathname === '/contacto' || pathname === '/contacto.html') {

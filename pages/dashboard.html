@@ -67,6 +67,27 @@
           <p>Programa y gestiona reuniones del equipo</p>
         </div>
       </div>
+
+      <h3 style="margin-top: 2rem;">📊 Gestión Financiera y Recursos (Sprint 3)</h3>
+      <div class="cards-container" id="sprint3Cards" style="margin-top: 1rem;">
+        <div class="card" onclick="irARecursos()">
+          <i class="fas fa-tools fa-3x"></i>
+          <h3>Recursos</h3>
+          <p>Gestiona recursos, materiales y equipos por proyecto</p>
+        </div>
+        
+        <div class="card" onclick="irAPresupuestos()">
+          <i class="fas fa-dollar-sign fa-3x"></i>
+          <h3>Presupuestos</h3>
+          <p>Administra presupuestos y controla gastos</p>
+        </div>
+        
+        <div class="card" onclick="irAGastos()">
+          <i class="fas fa-receipt fa-3x"></i>
+          <h3>Gastos</h3>
+          <p>Registra y monitorea gastos del proyecto</p>
+        </div>
+      </div>
     </section>
 
     <section class="asesoramiento">
@@ -122,6 +143,52 @@
       sidebar.classList.remove('active');
       overlay.classList.remove('active');
     });
+
+    // Funciones de navegación para Sprint 3
+    async function irARecursos() {
+      const proyectoId = await obtenerPrimerProyecto();
+      if (proyectoId) {
+        window.location.href = `recursos.html?proyecto_id=${proyectoId}`;
+      } else {
+        alert('No tienes proyectos disponibles. Por favor crea un proyecto primero.');
+        window.location.href = 'proyectos.html';
+      }
+    }
+
+    async function irAPresupuestos() {
+      const proyectoId = await obtenerPrimerProyecto();
+      if (proyectoId) {
+        window.location.href = `presupuestos.html?proyecto_id=${proyectoId}`;
+      } else {
+        alert('No tienes proyectos disponibles. Por favor crea un proyecto primero.');
+        window.location.href = 'proyectos.html';
+      }
+    }
+
+    async function irAGastos() {
+      const proyectoId = await obtenerPrimerProyecto();
+      if (proyectoId) {
+        window.location.href = `gastos.html?proyecto_id=${proyectoId}`;
+      } else {
+        alert('No tienes proyectos disponibles. Por favor crea un proyecto primero.');
+        window.location.href = 'proyectos.html';
+      }
+    }
+
+    async function obtenerPrimerProyecto() {
+      try {
+        const response = await fetch('/api/projects');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.projects && data.projects.length > 0) {
+            return data.projects[0].id;
+          }
+        }
+      } catch (error) {
+        console.error('Error al obtener proyectos:', error);
+      }
+      return null;
+    }
   </script>
 
 </body>

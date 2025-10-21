@@ -19,6 +19,11 @@ const CategoryModel = require('../models/categoryModel');
 const ProjectModel = require('../models/projectModel');
 const PhaseModel = require('../models/phaseModel');
 const MilestoneModel = require('../models/milestoneModel');
+const ResourceModel = require('../models/resourceModel');
+const BudgetModel = require('../models/budgetModel');
+const ExpenseModel = require('../models/expenseModel');
+const TaskModel = require('../models/taskModel');
+const TaskAssignmentModel = require('../models/taskAssignmentModel');
 
 async function runMigrations() {
   console.log('🚀 Iniciando migraciones de base de datos...\n');
@@ -74,6 +79,31 @@ async function runMigrations() {
     await MilestoneModel.createTable();
     console.log('✅ Tabla de hitos creada\n');
 
+    // 11. Crear tabla de recursos (Sprint 3 - RF01)
+    console.log('📦 Paso 11: Creando tabla de recursos...');
+    await ResourceModel.createTable();
+    console.log('✅ Tabla de recursos creada\n');
+
+    // 12. Crear tabla de presupuestos (Sprint 3 - RF02)
+    console.log('📦 Paso 12: Creando tabla de presupuestos...');
+    await BudgetModel.createTable();
+    console.log('✅ Tabla de presupuestos creada\n');
+
+    // 13. Crear tabla de gastos (Sprint 3 - RF19)
+    console.log('📦 Paso 13: Creando tabla de gastos...');
+    await ExpenseModel.createTable();
+    console.log('✅ Tabla de gastos creada\n');
+
+    // 14. Crear tabla de tareas (Sprint 3 - RF03)
+    console.log('📦 Paso 14: Creando tabla de tareas...');
+    await TaskModel.createTable();
+    console.log('✅ Tabla de tareas creada\n');
+
+    // 15. Crear tabla de asignaciones de tareas (Sprint 3 - RF03)
+    console.log('📦 Paso 15: Creando tabla de asignaciones de tareas...');
+    await TaskAssignmentModel.createTable();
+    console.log('✅ Tabla de asignaciones de tareas creada\n');
+
     console.log('='.repeat(50));
     console.log('✨ MIGRACIONES COMPLETADAS EXITOSAMENTE');
     console.log('='.repeat(50));
@@ -93,6 +123,7 @@ async function runMigrations() {
     console.log(`   - Categorías de proyecto: ${categorias.length}`);
     console.log('   - Tablas Sprint 1: roles, usuarios');
     console.log('   - Tablas Sprint 2: categorias_proyecto, proyectos, fases, hitos');
+    console.log('   - Tablas Sprint 3: recursos, presupuestos, gastos, tareas, asignaciones_tareas');
     console.log('');
 
   } catch (error) {
@@ -120,6 +151,13 @@ async function initDatabase() {
     await ProjectModel.createTable();
     await PhaseModel.createTable();
     await MilestoneModel.createTable();
+
+    // Sprint 3: Recursos y Presupuestos
+    await ResourceModel.createTable();
+    await BudgetModel.createTable();
+    await ExpenseModel.createTable();
+    await TaskModel.createTable();
+    await TaskAssignmentModel.createTable();
 
   } catch (error) {
     // Si las tablas ya existen, no es error fatal
