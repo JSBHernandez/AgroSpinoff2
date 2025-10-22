@@ -344,14 +344,17 @@
 
       productosFiltrados.forEach(producto => {
         const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid #eee';
-        
         const proveedor = proveedores.find(prov => prov.id === producto.proveedor_id);
         const stockBajo = producto.stock_actual <= producto.stock_minimo;
         
+        // Agregar clase si stock bajo
+        if (stockBajo) {
+          tr.className = 'stock-bajo';
+        }
+        
         const tipoBadge = producto.es_organico === 1
-          ? '<span style="background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">🌱 Orgánico</span>'
-          : '<span style="background: #ff9800; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">⚗️ Químico</span>';
+          ? '<span class="badge-organico">🌱 Orgánico</span>'
+          : '<span class="badge-quimico">⚗️ Químico</span>';
 
         const stockStyle = stockBajo ? 'color: #f44336; font-weight: bold;' : '';
 
@@ -366,8 +369,8 @@
           <td style="padding: 12px;">${proveedor ? proveedor.nombre : 'Sin proveedor'}</td>
           <td style="padding: 12px; text-align: center;">${tipoBadge}</td>
           <td style="padding: 12px; text-align: center;">
-            <button onclick="editarProducto(${producto.id})" class="btn-action" title="Editar">✏️</button>
-            <button onclick="eliminarProducto(${producto.id})" class="btn-delete" title="Eliminar">🗑️</button>
+            <button onclick="editarProducto(${producto.id})" class="btn-action btn-edit" title="Editar">✏️</button>
+            <button onclick="eliminarProducto(${producto.id})" class="btn-action btn-delete" title="Eliminar">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -538,7 +541,7 @@
       
       dropdownButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
-          e.preventDefault();
+          e.stopPropagation();
           const dropdown = this.parentElement;
           const isOpen = dropdown.classList.contains('open');
           
@@ -555,17 +558,16 @@
       });
       
       // Cerrar dropdowns al hacer clic fuera
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.nav-dropdown')) {
-          document.querySelectorAll('.nav-dropdown').forEach(dd => {
-            dd.classList.remove('open');
-          });
-        }
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.nav-dropdown').forEach(dd => {
+          dd.classList.remove('open');
+        });
       });
     });
   </script>
 
   <style>
+    /* Botones de filtro */
     .filter-btn {
       padding: 10px 20px;
       border: 1px solid #ddd;
@@ -573,18 +575,111 @@
       background: white;
       cursor: pointer;
       transition: all 0.3s;
+      font-weight: 500;
+      font-size: 14px;
     }
 
     .filter-btn:hover {
       background: #f5f5f5;
+      border-color: #4caf50;
+      transform: translateY(-1px);
     }
 
     .filter-btn.active {
       background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
       color: white;
       border-color: #2e7d32;
+      box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
     }
-  </style></html>
+
+    /* Badges para tipo de producto */
+    .badge-organico {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-quimico {
+      background: linear-gradient(135deg, #ff9800 0%, #ffa726 100%);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Fila con stock bajo */
+    .stock-bajo {
+      background-color: #fff3cd !important;
+      border-left: 4px solid #ff9800;
+    }
+
+    /* Mejorar tabla */
+    #tabla-productos tbody tr {
+      transition: all 0.2s;
+    }
+
+    #tabla-productos tbody tr:hover {
+      background: #f5f5f5;
+      transform: translateX(2px);
+    }
+
+    /* Loader mejorado */
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    #loader::before {
+      content: "⏳";
+      font-size: 48px;
+      animation: rotate 2s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Sección de filtros */
+    .filter-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Select mejorado */
+    select {
+      transition: all 0.3s;
+    }
+
+    select:focus {
+      border-color: #4caf50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      outline: none;
+    }
+  </style>
+</html>
 
 
 
