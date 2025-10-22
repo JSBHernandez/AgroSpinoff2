@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario - AgroTechNova</title>
+  <link rel="stylesheet" href="../public/css/base.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>📦 Gestión de Inventario</h1>
+        <div class="user-info">
+          <span id="userName">Usuario</span>
+          <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="proveedores.html">Proveedores</a>
+        <a href="#" class="active">Inventario</a>
+      </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span>›</span>
+      <span>Inventario</span>
+    </div>
+
+    <!-- Pestañas de navegación -->
+    <section style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
+        <button class="tab-btn active" data-tab="productos" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold; border-bottom: 3px solid #4CAF50;">📋 Productos</button>
+        <button class="tab-btn" data-tab="movimientos" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold;">📊 Movimientos</button>
+        <button class="tab-btn" data-tab="alertas" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold;">⚠️ Alertas</button>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-primary" id="btnNuevoProducto">➕ Nuevo Producto</button>
+        <button class="btn-success" id="btnRegistrarEntrada">📥 Registrar Entrada</button>
+        <button class="btn-danger" id="btnRegistrarSalida">📤 Registrar Salida</button>
+        <button class="btn btn-secondary" onclick="cargarDatos()">🔄 Actualizar</button>
+      </div>
+    </section>
+
+    <!-- Estadísticas -->
+    <div class="stats-cards">
+      <div class="card">
+        <h3>Total Productos</h3>
+        <p class="stat-value" id="totalProductos">0</p>
+      </div>
+      <div class="card">
+        <h3>Valor Total Inventario</h3>
+        <p class="stat-value" id="valorTotal">$0</p>
+      </div>
+      <div class="card">
+        <h3>Productos Disponibles</h3>
+        <p class="stat-value" style="color: #28a745;" id="totalDisponibles">0</p>
+      </div>
+      <div class="card">
+        <h3>Stock Bajo</h3>
+        <p class="stat-value" style="color: #dc3545;" id="totalStockBajo">0</p>
+      </div>
+    </div>
+
+    <!-- PESTAÑA: PRODUCTOS -->
+    <div id="tabProductos" class="tab-content">
+      <!-- Formulario de producto -->
+      <div id="formProductoContainer" class="form-container hidden">
+        <h2 id="formProductoTitle">Nuevo Producto</h2>
+        <form id="formProducto">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre del producto*</label>
+              <input type="text" id="producto_nombre" required>
+            </div>
+            <div class="form-group">
+              <label>Tipo*</label>
+              <select id="producto_tipo" required>
+                <option value="">Seleccione...</option>
+                <option value="insumo">Insumo</option>
+                <option value="herramienta">Herramienta</option>
+                <option value="equipo">Equipo</option>
+                <option value="materia_prima">Materia Prima</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categoría</label>
+              <input type="text" id="producto_categoria" placeholder="Ej: Fertilizantes, Semillas...">
+            </div>
+            <div class="form-group">
+              <label>Unidad de medida*</label>
+              <input type="text" id="producto_unidad" placeholder="kg, litros, unidades..." required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Stock inicial</label>
+              <input type="number" id="producto_stock_actual" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label>Stock mínimo*</label>
+              <input type="number" id="producto_stock_minimo" min="0" value="0" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Costo unitario*</label>
+              <input type="number" id="producto_costo_unitario" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label>Proveedor</label>
+              <select id="producto_proveedor_id">
+                <option value="">Sin proveedor</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="producto_descripcion" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="producto_es_organico">
+              <span>Producto orgánico</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancelarProducto">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabla de productos -->
+      <div class="table-container">
+        <h2>📋 Listado de Productos</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Categoría</th>
+              <th>Stock Actual</th>
+              <th>Stock Mínimo</th>
+              <th>Costo Unit.</th>
+              <th>Proveedor</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyProductos">
+            <tr><td colspan="9" class="text-center">Cargando productos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PESTAÑA: MOVIMIENTOS -->
+    <div id="tabMovimientos" class="tab-content hidden">
+      <!-- Formulario de entrada -->
+      <div id="formEntradaContainer" class="form-container hidden">
+        <h2>📥 Registrar Entrada de Producto</h2>
+        <form id="formEntrada">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Producto*</label>
+              <select id="entrada_producto_id" required>
+                <option value="">Seleccione un producto...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cantidad*</label>
+              <input type="number" id="entrada_cantidad" min="1" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Costo unitario*</label>
+              <input type="number" id="entrada_costo_unitario" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+              <label>Fecha*</label>
+              <input type="date" id="entrada_fecha" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="entrada_descripcion" rows="2" placeholder="Ej: Compra a proveedor XYZ"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancelarEntrada">Cancelar</button>
+            <button type="submit" class="btn-success">Registrar Entrada</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulario de salida -->
+      <div id="formSalidaContainer" class="form-container hidden">
+        <h2>📤 Registrar Salida de Producto</h2>
+        <form id="formSalida">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Producto*</label>
+              <select id="salida_producto_id" required>
+                <option value="">Seleccione un producto...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cantidad*</label>
+              <input type="number" id="salida_cantidad" min="1" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Proyecto (opcional)</label>
+              <select id="salida_proyecto_id">
+                <option value="">Sin proyecto asociado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Fecha*</label>
+              <input type="date" id="salida_fecha" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Descripción*</label>
+            <textarea id="salida_descripcion" rows="2" placeholder="Ej: Entrega para proyecto X" required></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="btnCancelarSalida">Cancelar</button>
+            <button type="submit" class="btn-danger">Registrar Salida</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabla de movimientos -->
+      <div class="table-container">
+        <h2>📊 Historial de Movimientos</h2>
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+          <button class="btn btn-secondary" onclick="filtrarMovimientos('todos')">Todos</button>
+          <button class="btn-success" onclick="filtrarMovimientos('entrada')">Entradas</button>
+          <button class="btn-danger" onclick="filtrarMovimientos('salida')">Salidas</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Costo Unit.</th>
+              <th>Costo Total</th>
+              <th>Proyecto</th>
+              <th>Usuario</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMovimientos">
+            <tr><td colspan="8" class="text-center">Cargando movimientos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PESTAÑA: ALERTAS -->
+    <div id="tabAlertas" class="tab-content hidden">
+      <div class="table-container">
+        <h2>⚠️ Productos con Stock Bajo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Stock Actual</th>
+              <th>Stock Mínimo</th>
+              <th>Diferencia</th>
+              <th>Proveedor</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyAlertas">
+            <tr><td colspan="6" class="text-center">Cargando alertas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón oculto para logout -->
+  <form id="logoutForm" method="POST" action="/api/auth/logout" style="display: none;">
+    <button id="logoutBtn" type="submit"></button>
+  </form>
+
+  <script>
+    let productoEditando = null;
+    let movimientosFiltrados = [];
+
+    // Verificar sesión al cargar
+    async function verificarSesion() {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (!response.ok) {
+          window.location.href = '/login.html';
+          return false;
+        }
+        const data = await response.json();
+        document.getElementById('userName').textContent = data.user.nombre;
+        return true;
+      } catch (error) {
+        window.location.href = '/login.html';
+        return false;
+      }
+    }
+
+    // Cerrar sesión
+    function cerrarSesion() {
+      document.getElementById('logoutBtn').click();
+    }
+
+    // Gestión de pestañas
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Actualizar botones
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('active');
+          b.style.borderBottom = 'none';
+        });
+        btn.classList.add('active');
+        btn.style.borderBottom = '3px solid #4CAF50';
+
+        // Mostrar contenido
+        const tabName = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.add('hidden');
+        });
+        document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.remove('hidden');
+      });
+    });
+
+    // Cargar datos iniciales
+    async function cargarDatos() {
+      await Promise.all([
+        cargarProductos(),
+        cargarMovimientos(),
+        cargarAlertas(),
+        cargarProveedores(),
+        cargarProyectos()
+      ]);
+    }
+
+    // Cargar productos
+    async function cargarProductos() {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+        
+        const tbody = document.getElementById('tbodyProductos');
+        
+        if (!data.products || data.products.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center">No hay productos registrados</td></tr>';
+          actualizarEstadisticas([]);
+          return;
+        }
+
+        tbody.innerHTML = data.products.map(p => {
+          const stockBajo = p.stock_actual <= p.stock_minimo;
+          return `
+            <tr style="${stockBajo ? 'background-color: #fff3cd;' : ''}">
+              <td>${p.nombre} ${p.es_organico ? '🌿' : ''}</td>
+              <td>${p.tipo}</td>
+              <td>${p.categoria || 'N/A'}</td>
+              <td style="${stockBajo ? 'color: #dc3545; font-weight: bold;' : ''}">${p.stock_actual} ${p.unidad}</td>
+              <td>${p.stock_minimo} ${p.unidad}</td>
+              <td>$${parseFloat(p.costo_unitario).toFixed(2)}</td>
+              <td>${p.proveedor_nombre || 'N/A'}</td>
+              <td><span class="badge badge-${p.estado}">${p.estado}</span></td>
+              <td>
+                <button class="btn-small btn-edit" onclick="editarProducto(${p.id})">Editar</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        actualizarEstadisticas(data.products);
+        
+        // Actualizar selectores
+        actualizarSelectoresProductos(data.products);
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+        alert('Error al cargar productos');
+      }
+    }
+
+    // Actualizar estadísticas
+    function actualizarEstadisticas(productos) {
+      const total = productos.length;
+      const disponibles = productos.filter(p => p.estado === 'disponible').length;
+      const stockBajo = productos.filter(p => p.stock_actual <= p.stock_minimo).length;
+      const valorTotal = productos.reduce((sum, p) => sum + (p.stock_actual * p.costo_unitario), 0);
+
+      document.getElementById('totalProductos').textContent = total;
+      document.getElementById('totalDisponibles').textContent = disponibles;
+      document.getElementById('totalStockBajo').textContent = stockBajo;
+      document.getElementById('valorTotal').textContent = `$${valorTotal.toFixed(2)}`;
+    }
+
+    // Actualizar selectores de productos
+    function actualizarSelectoresProductos(productos) {
+      const htmlOptions = productos.map(p => 
+        `<option value="${p.id}">${p.nombre} (Stock: ${p.stock_actual} ${p.unidad})</option>`
+      ).join('');
+      
+      document.getElementById('entrada_producto_id').innerHTML = 
+        '<option value="">Seleccione un producto...</option>' + htmlOptions;
+      document.getElementById('salida_producto_id').innerHTML = 
+        '<option value="">Seleccione un producto...</option>' + htmlOptions;
+    }
+
+    // Cargar proveedores
+    async function cargarProveedores() {
+      try {
+        const response = await fetch('/api/providers/active');
+        const data = await response.json();
+        
+        if (data.providers) {
+          const htmlOptions = data.providers.map(p => 
+            `<option value="${p.id}">${p.nombre}</option>`
+          ).join('');
+          
+          document.getElementById('producto_proveedor_id').innerHTML = 
+            '<option value="">Sin proveedor</option>' + htmlOptions;
+        }
+      } catch (error) {
+        console.error('Error al cargar proveedores:', error);
+      }
+    }
+
+    // Cargar proyectos
+    async function cargarProyectos() {
+      try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+        
+        if (data.projects) {
+          const htmlOptions = data.projects.map(p => 
+            `<option value="${p.id}">${p.nombre}</option>`
+          ).join('');
+          
+          document.getElementById('salida_proyecto_id').innerHTML = 
+            '<option value="">Sin proyecto asociado</option>' + htmlOptions;
+        }
+      } catch (error) {
+        console.error('Error al cargar proyectos:', error);
+      }
+    }
+
+    // Cargar movimientos
+    async function cargarMovimientos() {
+      try {
+        const response = await fetch('/api/inventory');
+        const data = await response.json();
+        
+        movimientosFiltrados = data.movements || [];
+        mostrarMovimientos(movimientosFiltrados);
+      } catch (error) {
+        console.error('Error al cargar movimientos:', error);
+      }
+    }
+
+    // Mostrar movimientos
+    function mostrarMovimientos(movimientos) {
+      const tbody = document.getElementById('tbodyMovimientos');
+      
+      if (movimientos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay movimientos registrados</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = movimientos.map(m => `
+        <tr>
+          <td>${m.fecha}</td>
+          <td><span class="badge badge-${m.tipo === 'entrada' ? 'success' : 'danger'}">${m.tipo}</span></td>
+          <td>${m.producto_nombre}</td>
+          <td>${m.cantidad} ${m.unidad}</td>
+          <td>$${parseFloat(m.costo_unitario || 0).toFixed(2)}</td>
+          <td>$${parseFloat(m.costo_total || 0).toFixed(2)}</td>
+          <td>${m.proyecto_nombre || 'N/A'}</td>
+          <td>${m.usuario_nombre || 'Sistema'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Filtrar movimientos
+    function filtrarMovimientos(tipo) {
+      if (tipo === 'todos') {
+        cargarMovimientos();
+      } else {
+        const filtrados = movimientosFiltrados.filter(m => m.tipo === tipo);
+        mostrarMovimientos(filtrados);
+      }
+    }
+
+    // Cargar alertas
+    async function cargarAlertas() {
+      try {
+        const response = await fetch('/api/products/low-stock');
+        const data = await response.json();
+        
+        const tbody = document.getElementById('tbodyAlertas');
+        
+        if (!data.products || data.products.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="color: #28a745;">✅ No hay productos con stock bajo</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.products.map(p => `
+          <tr style="background-color: #fff3cd;">
+            <td>${p.nombre}</td>
+            <td style="color: #dc3545; font-weight: bold;">${p.stock_actual} ${p.unidad}</td>
+            <td>${p.stock_minimo} ${p.unidad}</td>
+            <td style="color: #dc3545;">${p.stock_minimo - p.stock_actual} ${p.unidad}</td>
+            <td>${p.proveedor_nombre || 'Sin proveedor'}</td>
+            <td>
+              <button class="btn-small btn-success" onclick="registrarEntradaRapida(${p.id})">Registrar Entrada</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error al cargar alertas:', error);
+      }
+    }
+
+    // Botones principales
+    document.getElementById('btnNuevoProducto').addEventListener('click', () => {
+      productoEditando = null;
+      document.getElementById('formProductoTitle').textContent = 'Nuevo Producto';
+      document.getElementById('formProducto').reset();
+      document.getElementById('formProductoContainer').classList.remove('hidden');
+      document.querySelectorAll('.tab-btn')[0].click();
+    });
+
+    document.getElementById('btnRegistrarEntrada').addEventListener('click', () => {
+      document.getElementById('formEntrada').reset();
+      document.getElementById('entrada_fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('formEntradaContainer').classList.remove('hidden');
+      document.getElementById('formSalidaContainer').classList.add('hidden');
+      document.querySelectorAll('.tab-btn')[1].click();
+    });
+
+    document.getElementById('btnRegistrarSalida').addEventListener('click', () => {
+      document.getElementById('formSalida').reset();
+      document.getElementById('salida_fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('formSalidaContainer').classList.remove('hidden');
+      document.getElementById('formEntradaContainer').classList.add('hidden');
+      document.querySelectorAll('.tab-btn')[1].click();
+    });
+
+    // Cancelar formularios
+    document.getElementById('btnCancelarProducto').addEventListener('click', () => {
+      document.getElementById('formProductoContainer').classList.add('hidden');
+    });
+
+    document.getElementById('btnCancelarEntrada').addEventListener('click', () => {
+      document.getElementById('formEntradaContainer').classList.add('hidden');
+    });
+
+    document.getElementById('btnCancelarSalida').addEventListener('click', () => {
+      document.getElementById('formSalidaContainer').classList.add('hidden');
+    });
+
+    // Guardar producto
+    document.getElementById('formProducto').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const producto = {
+        nombre: document.getElementById('producto_nombre').value,
+        tipo: document.getElementById('producto_tipo').value,
+        categoria: document.getElementById('producto_categoria').value,
+        unidad: document.getElementById('producto_unidad').value,
+        stock_actual: parseInt(document.getElementById('producto_stock_actual').value),
+        stock_minimo: parseInt(document.getElementById('producto_stock_minimo').value),
+        costo_unitario: parseFloat(document.getElementById('producto_costo_unitario').value),
+        proveedor_id: document.getElementById('producto_proveedor_id').value || null,
+        descripcion: document.getElementById('producto_descripcion').value,
+        es_organico: document.getElementById('producto_es_organico').checked
+      };
+
+      try {
+        const url = productoEditando ? `/api/products/${productoEditando}` : '/api/products';
+        const method = productoEditando ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(producto)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message || 'Producto guardado exitosamente');
+          document.getElementById('formProductoContainer').classList.add('hidden');
+          await cargarProductos();
+        } else {
+          alert(data.message || 'Error al guardar producto');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar producto');
+      }
+    });
+
+    // Guardar entrada
+    document.getElementById('formEntrada').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const entrada = {
+        producto_id: parseInt(document.getElementById('entrada_producto_id').value),
+        cantidad: parseInt(document.getElementById('entrada_cantidad').value),
+        costo_unitario: parseFloat(document.getElementById('entrada_costo_unitario').value),
+        fecha: document.getElementById('entrada_fecha').value,
+        descripcion: document.getElementById('entrada_descripcion').value
+      };
+
+      try {
+        const response = await fetch('/api/inventory/entrada', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entrada)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Entrada registrada exitosamente');
+          document.getElementById('formEntradaContainer').classList.add('hidden');
+          await cargarDatos();
+        } else {
+          alert(data.message || 'Error al registrar entrada');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al registrar entrada');
+      }
+    });
+
+    // Guardar salida
+    document.getElementById('formSalida').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const salida = {
+        producto_id: parseInt(document.getElementById('salida_producto_id').value),
+        cantidad: parseInt(document.getElementById('salida_cantidad').value),
+        proyecto_id: document.getElementById('salida_proyecto_id').value || null,
+        fecha: document.getElementById('salida_fecha').value,
+        descripcion: document.getElementById('salida_descripcion').value
+      };
+
+      try {
+        const response = await fetch('/api/inventory/salida', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(salida)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Salida registrada exitosamente');
+          document.getElementById('formSalidaContainer').classList.add('hidden');
+          await cargarDatos();
+        } else {
+          alert(data.message || 'Error al registrar salida');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al registrar salida');
+      }
+    });
+
+    // Editar producto
+    async function editarProducto(id) {
+      try {
+        const response = await fetch(`/api/products/${id}`);
+        const data = await response.json();
+
+        if (response.ok && data.product) {
+          const p = data.product;
+          productoEditando = id;
+          document.getElementById('formProductoTitle').textContent = 'Editar Producto';
+          document.getElementById('producto_nombre').value = p.nombre;
+          document.getElementById('producto_tipo').value = p.tipo;
+          document.getElementById('producto_categoria').value = p.categoria || '';
+          document.getElementById('producto_unidad').value = p.unidad;
+          document.getElementById('producto_stock_actual').value = p.stock_actual;
+          document.getElementById('producto_stock_minimo').value = p.stock_minimo;
+          document.getElementById('producto_costo_unitario').value = p.costo_unitario;
+          document.getElementById('producto_proveedor_id').value = p.proveedor_id || '';
+          document.getElementById('producto_descripcion').value = p.descripcion || '';
+          document.getElementById('producto_es_organico').checked = p.es_organico === 1;
+          document.getElementById('formProductoContainer').classList.remove('hidden');
+          document.querySelectorAll('.tab-btn')[0].click();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al cargar producto');
+      }
+    }
+
+    // Registrar entrada rápida desde alertas
+    function registrarEntradaRapida(productoId) {
+      document.getElementById('entrada_producto_id').value = productoId;
+      document.getElementById('btnRegistrarEntrada').click();
+    }
+
+    // Inicializar
+    window.onload = async () => {
+      if (await verificarSesion()) {
+        await cargarDatos();
+        // Establecer fecha por defecto
+        document.getElementById('entrada_fecha').value = new Date().toISOString().split('T')[0];
+        document.getElementById('salida_fecha').value = new Date().toISOString().split('T')[0];
+      }
+    };
+
+    // Manejo del logout
+    document.getElementById('logoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+      } catch (error) {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>

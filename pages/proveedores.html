@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proveedores - AgroTechNova</title>
+  <link rel="stylesheet" href="../public/css/base.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>🏢 Gestión de Proveedores</h1>
+        <div class="user-info">
+          <span id="userName">Usuario</span>
+          <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="#" class="active">Proveedores</a>
+        <a href="inventario.html">Inventario</a>
+      </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span>›</span>
+      <span>Proveedores</span>
+    </div>
+
+    <!-- Botones de acción -->
+    <section style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <button class="btn-primary" id="btnNuevoProveedor">➕ Nuevo Proveedor</button>
+      <button class="btn btn-secondary" onclick="cargarProveedores()">🔄 Actualizar</button>
+    </section>
+
+    <!-- Estadísticas -->
+    <div class="stats-cards">
+      <div class="card">
+        <h3>Total Proveedores</h3>
+        <p class="stat-value" id="totalProveedores">0</p>
+      </div>
+      <div class="card">
+        <h3>Activos</h3>
+        <p class="stat-value" style="color: #28a745;" id="totalActivos">0</p>
+      </div>
+      <div class="card">
+        <h3>Inactivos</h3>
+        <p class="stat-value" style="color: #dc3545;" id="totalInactivos">0</p>
+      </div>
+    </div>
+
+    <!-- Formulario (oculto inicialmente) -->
+    <div id="formContainer" class="form-container hidden">
+      <h2 id="formTitle">Nuevo Proveedor</h2>
+      <form id="formProveedor">
+        <div class="form-group">
+          <label>Nombre del proveedor*</label>
+          <input type="text" id="nombre" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>NIT</label>
+            <input type="text" id="nit">
+          </div>
+          <div class="form-group">
+            <label>Persona de contacto*</label>
+            <input type="text" id="contacto" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teléfono*</label>
+            <input type="tel" id="telefono" required>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" id="correo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección</label>
+          <input type="text" id="direccion">
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de productos que suministra*</label>
+          <input type="text" id="tipo_productos" placeholder="Ej: Fertilizantes, Semillas, Equipos..." required>
+        </div>
+
+        <div class="form-group" id="estadoContainer" style="display: none;">
+          <label>Estado</label>
+          <select id="estado">
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla de proveedores -->
+    <div class="table-container">
+      <h2>📋 Listado de Proveedores</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>NIT</th>
+            <th>Contacto</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Tipo Productos</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td colspan="8" class="text-center">Cargando proveedores...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Botón oculto para logout -->
+  <form id="logoutForm" method="POST" action="/api/auth/logout" style="display: none;">
+    <button id="logoutBtn" type="submit"></button>
+  </form>
+
+  <script>
+    let proveedorEditando = null;
+
+    // Verificar sesión al cargar
+    async function verificarSesion() {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (!response.ok) {
+          window.location.href = '/login.html';
+          return false;
+        }
+        const data = await response.json();
+        document.getElementById('userName').textContent = data.user.nombre;
+        return true;
+      } catch (error) {
+        window.location.href = '/login.html';
+        return false;
+      }
+    }
+
+    // Cerrar sesión
+    function cerrarSesion() {
+      document.getElementById('logoutBtn').click();
+    }
+
+    // Cargar proveedores
+    async function cargarProveedores() {
+      try {
+        const response = await fetch('/api/providers');
+        const data = await response.json();
+        
+        const tbody = document.getElementById('tbody');
+        
+        if (!data.providers || data.providers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay proveedores registrados</td></tr>';
+          actualizarEstadisticas([]); 
+          return;
+        }
+
+        tbody.innerHTML = data.providers.map(proveedor => `
+          <tr>
+            <td>${proveedor.nombre}</td>
+            <td>${proveedor.nit || 'N/A'}</td>
+            <td>${proveedor.contacto || 'N/A'}</td>
+            <td>${proveedor.telefono || 'N/A'}</td>
+            <td>${proveedor.correo || 'N/A'}</td>
+            <td>${proveedor.tipo_productos || 'N/A'}</td>
+            <td><span class="badge badge-${proveedor.estado}">${proveedor.estado}</span></td>
+            <td>
+              <button class="btn-small btn-edit" onclick="editarProveedor(${proveedor.id})">Editar</button>
+              <button class="btn-small ${proveedor.estado === 'activo' ? 'btn-delete' : 'btn-success'}" 
+                      onclick="toggleEstado(${proveedor.id}, '${proveedor.estado}')">
+                ${proveedor.estado === 'activo' ? 'Desactivar' : 'Activar'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+        actualizarEstadisticas(data.providers);
+      } catch (error) {
+        console.error('Error al cargar proveedores:', error);
+        alert('Error al cargar proveedores');
+      }
+    }
+
+    // Actualizar estadísticas
+    function actualizarEstadisticas(proveedores) {
+      document.getElementById('totalProveedores').textContent = proveedores.length;
+      document.getElementById('totalActivos').textContent = proveedores.filter(p => p.estado === 'activo').length;
+      document.getElementById('totalInactivos').textContent = proveedores.filter(p => p.estado === 'inactivo').length;
+    }
+
+    // Mostrar formulario nuevo
+    document.getElementById('btnNuevoProveedor').addEventListener('click', () => {
+      proveedorEditando = null;
+      document.getElementById('formTitle').textContent = 'Nuevo Proveedor';
+      document.getElementById('formProveedor').reset();
+      document.getElementById('estadoContainer').style.display = 'none';
+      document.getElementById('formContainer').classList.remove('hidden');
+    });
+
+    // Cancelar formulario
+    document.getElementById('btnCancelar').addEventListener('click', () => {
+      document.getElementById('formContainer').classList.add('hidden');
+      proveedorEditando = null;
+    });
+
+    // Guardar proveedor
+    document.getElementById('formProveedor').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const proveedor = {
+        nombre: document.getElementById('nombre').value.trim(),
+        nit: document.getElementById('nit').value.trim(),
+        contacto: document.getElementById('contacto').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        correo: document.getElementById('correo').value.trim(),
+        direccion: document.getElementById('direccion').value.trim(),
+        tipo_productos: document.getElementById('tipo_productos').value.trim()
+      };
+
+      if (proveedorEditando) {
+        proveedor.estado = document.getElementById('estado').value;
+      }
+
+      try {
+        const url = proveedorEditando ? `/api/providers/${proveedorEditando}` : '/api/providers';
+        const method = proveedorEditando ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(proveedor)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message || 'Proveedor guardado exitosamente');
+          document.getElementById('formContainer').classList.add('hidden');
+          document.getElementById('formProveedor').reset();
+          await cargarProveedores();
+        } else {
+          alert(data.message || 'Error al guardar proveedor');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar proveedor');
+      }
+    });
+
+    // Editar proveedor
+    async function editarProveedor(id) {
+      try {
+        const response = await fetch(`/api/providers/${id}`);
+        const data = await response.json();
+
+        if (response.ok && data.provider) {
+          proveedorEditando = id;
+          document.getElementById('formTitle').textContent = 'Editar Proveedor';
+          document.getElementById('nombre').value = data.provider.nombre;
+          document.getElementById('nit').value = data.provider.nit || '';
+          document.getElementById('contacto').value = data.provider.contacto || '';
+          document.getElementById('telefono').value = data.provider.telefono || '';
+          document.getElementById('correo').value = data.provider.correo || '';
+          document.getElementById('direccion').value = data.provider.direccion || '';
+          document.getElementById('tipo_productos').value = data.provider.tipo_productos || '';
+          document.getElementById('estado').value = data.provider.estado;
+          document.getElementById('estadoContainer').style.display = 'block';
+          document.getElementById('formContainer').classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al cargar proveedor');
+      }
+    }
+
+    // Cambiar estado del proveedor
+    async function toggleEstado(id, estadoActual) {
+      const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+      const accion = nuevoEstado === 'activo' ? 'activate' : 'deactivate';
+      
+      if (!confirm(`¿Está seguro de ${accion === 'activate' ? 'activar' : 'desactivar'} este proveedor?`)) return;
+
+      try {
+        const response = await fetch(`/api/providers/${id}/${accion}`, {
+          method: 'PATCH'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(`Proveedor ${accion === 'activate' ? 'activado' : 'desactivado'} exitosamente`);
+          await cargarProveedores();
+        } else {
+          alert(data.message || 'Error al cambiar estado');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al cambiar estado del proveedor');
+      }
+    }
+
+    // Inicializar
+    window.onload = async () => {
+      if (await verificarSesion()) {
+        await cargarProveedores();
+      }
+    };
+
+    // Manejo del logout
+    document.getElementById('logoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+      } catch (error) {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>
