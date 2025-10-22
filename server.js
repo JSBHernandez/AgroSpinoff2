@@ -29,6 +29,7 @@ const handleExpenseRoutes = require('./src/routes/expenseRoutes');
 const handleProviderRoutes = require('./src/routes/providerRoutes');
 const handleProductRoutes = require('./src/routes/productRoutes');
 const handleInventoryRoutes = require('./src/routes/inventoryRoutes');
+const handleReportRoutes = require('./src/routes/reportRoutes');
 const { startSessionCleaner } = require('./src/utils/sessionManager');
 
 // Configuración del servidor
@@ -169,6 +170,12 @@ function handleAPIRoutes(req, res) {
     return;
   }
 
+  // Rutas de reportes (/api/reports/*) - Sprint 5
+  if (pathname.startsWith('/api/reports')) {
+    handleReportRoutes(req, res);
+    return;
+  }
+
   // Ruta API no encontrada
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
@@ -228,6 +235,12 @@ const server = http.createServer((req, res) => {
     pathname = '/pages/objetivos.html';
   } else if (pathname === '/servicios' || pathname === '/servicios.html') {
     pathname = '/pages/servicios.html';
+  } else if (pathname === '/reportes' || pathname === '/reportes.html') {
+    pathname = '/pages/reportes.html';
+  } else if (pathname === '/proyectosFinalizados' || pathname === '/proyectosFinalizados.html') {
+    pathname = '/pages/proyectosFinalizados.html';
+  } else if (pathname === '/catalogo' || pathname === '/catalogo.html') {
+    pathname = '/pages/catalogo.html';
   }
 
   // Construir ruta del archivo

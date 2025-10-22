@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes Financieros - AgroTechNova</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../public/css/base.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header con navegación unificada -->
+    <header>
+      <div class="header-content">
+        <img src="../images/logo.png" alt="Logo AgroTechnova" class="logo">
+        <h1>📊 Reportes Financieros</h1>
+        <div class="user-info">
+          <span id="userName">Usuario</span>
+          <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="agendaReuniones.html">Agenda</a>
+        
+        <!-- Dropdown: Gestión Financiera -->
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn">
+            Gestión Financiera
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="nav-dropdown-content">
+            <a href="recursos.html">Recursos</a>
+            <a href="presupuestos.html">Presupuestos</a>
+            <a href="gastos.html">Gastos</a>
+          </div>
+        </div>
+        
+        <!-- Dropdown: Inventario y Proveedores -->
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn">
+            Inventario y Proveedores
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="nav-dropdown-content">
+            <a href="proveedores.html">Proveedores</a>
+            <a href="productos.html">Productos</a>
+            <a href="inventario.html">Inventario</a>
+          </div>
+        </div>
+
+        <!-- Dropdown: Reportes y Documentación -->
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn active">
+            Reportes y Documentación
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="nav-dropdown-content">
+            <a href="reportes.html" class="active">Reportes Financieros</a>
+            <a href="proyectosFinalizados.html">Proyectos Finalizados</a>
+            <a href="catalogo.html">Catálogo de Servicios</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span>›</span>
+      <span>Reportes Financieros</span>
+    </div>
+
+    <!-- Reporte Consolidado -->
+    <section class="stats-section" style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="color: #2e7d32; margin-bottom: 20px;">📈 Reporte Consolidado del Sistema</h2>
+      
+      <div class="stats-cards">
+        <div class="card">
+          <h3>Total Proyectos</h3>
+          <p class="stat-value" id="totalProyectos">0</p>
+        </div>
+        <div class="card">
+          <h3>Presupuesto Total</h3>
+          <p class="stat-value" id="presupuestoTotal">$0</p>
+        </div>
+        <div class="card">
+          <h3>Total Gastado</h3>
+          <p class="stat-value" style="color: #f57c00;" id="totalGastado">$0</p>
+        </div>
+        <div class="card">
+          <h3>Total Recursos</h3>
+          <p class="stat-value" id="totalRecursos">0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Selector de Proyecto -->
+    <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="color: #2e7d32; margin-bottom: 20px;">🔍 Generar Reporte por Proyecto</h2>
+      
+      <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 15px; align-items: end;">
+        <div class="form-group" style="margin: 0;">
+          <label>Seleccionar Proyecto</label>
+          <select id="proyectoSelect" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 5px;">
+            <option value="">Cargando proyectos...</option>
+          </select>
+        </div>
+        <button onclick="generarReporte()" class="btn-primary">📊 Generar Reporte</button>
+        <button onclick="limpiarReporte()" class="btn-secondary">🔄 Limpiar</button>
+      </div>
+    </section>
+
+    <!-- Reporte del Proyecto -->
+    <div id="reporteContainer" class="hidden">
+      <!-- Información General -->
+      <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="color: #2e7d32; margin: 0;">📄 Reporte del Proyecto</h2>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="exportarPDF()" class="btn-danger"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+            <button onclick="exportarExcel()" class="btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+          </div>
+        </div>
+
+        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 id="proyectoNombre" style="color: #2e7d32; font-size: 24px; margin-bottom: 10px;">Nombre del Proyecto</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+              <strong>Estado:</strong>
+              <span id="proyectoEstado" class="badge">-</span>
+            </div>
+            <div>
+              <strong>Fecha Inicio:</strong>
+              <span id="proyectoFechaInicio">-</span>
+            </div>
+            <div>
+              <strong>Fecha Fin:</strong>
+              <span id="proyectoFechaFin">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Presupuesto -->
+        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #1976d2; margin-bottom: 15px;">💰 Presupuesto</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+              <div style="font-size: 14px; color: #666;">Presupuesto Total</div>
+              <div id="presupuestoTotalProyecto" style="font-size: 24px; font-weight: bold; color: #1976d2;">$0</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: #666;">Gastado</div>
+              <div id="presupuestoGastado" style="font-size: 24px; font-weight: bold; color: #f57c00;">$0</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: #666;">Disponible</div>
+              <div id="presupuestoDisponible" style="font-size: 24px; font-weight: bold; color: #4caf50;">$0</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: #666;">% Ejecución</div>
+              <div id="porcentajeEjecucion" style="font-size: 24px; font-weight: bold; color: #673ab7;">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recursos -->
+        <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="color: #f57c00; margin-bottom: 15px;">🔧 Recursos</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <div style="font-size: 14px; color: #666;">Total Recursos</div>
+              <div id="totalRecursosProyecto" style="font-size: 24px; font-weight: bold; color: #f57c00;">0</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: #666;">Costo Total</div>
+              <div id="costoTotalRecursos" style="font-size: 24px; font-weight: bold; color: #f57c00;">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gastos -->
+        <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); padding: 20px; border-radius: 8px;">
+          <h3 style="color: #d32f2f; margin-bottom: 15px;">💳 Gastos</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <div style="font-size: 14px; color: #666;">Total Gastos</div>
+              <div id="totalGastosProyecto" style="font-size: 24px; font-weight: bold; color: #d32f2f;">0</div>
+            </div>
+            <div>
+              <div style="font-size: 14px; color: #666;">Monto Total</div>
+              <div id="montoTotalGastos" style="font-size: 24px; font-weight: bold; color: #d32f2f;">$0</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Detalles: Gastos por Categoría -->
+      <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #2e7d32; margin-bottom: 20px;">📊 Gastos por Categoría</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Promedio</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCategorias">
+              <tr><td colspan="4" class="text-center">No hay datos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Detalles: Recursos por Tipo -->
+      <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: #2e7d32; margin-bottom: 20px;">🔧 Recursos por Tipo</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Cantidad Total</th>
+                <th>Costo Total</th>
+              </tr>
+            </thead>
+            <tbody id="tablaRecursos">
+              <tr><td colspan="4" class="text-center">No hay datos</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    let proyectoSeleccionado = null;
+
+    // Verificar sesión y cargar datos
+    async function verificarSesion() {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (!response.ok) {
+          window.location.href = '/login.html';
+          return false;
+        }
+        const data = await response.json();
+        document.getElementById('userName').textContent = data.user.nombre;
+        return true;
+      } catch (error) {
+        window.location.href = '/login.html';
+        return false;
+      }
+    }
+
+    function cerrarSesion() {
+      fetch('/api/auth/logout', { method: 'POST' })
+        .then(() => window.location.href = '/login.html');
+    }
+
+    // Cargar proyectos
+    async function cargarProyectos() {
+      try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+
+        const select = document.getElementById('proyectoSelect');
+        select.innerHTML = '<option value="">Seleccione un proyecto...</option>';
+
+        if (data.projects && data.projects.length > 0) {
+          data.projects.forEach(p => {
+            select.innerHTML += `<option value="${p.id}">${p.nombre} (${p.estado})</option>`;
+          });
+        }
+      } catch (error) {
+        console.error('Error al cargar proyectos:', error);
+      }
+    }
+
+    // Cargar reporte consolidado
+    async function cargarReporteConsolidado() {
+      try {
+        const response = await fetch('/api/reports/consolidated');
+        const data = await response.json();
+
+        if (data.success && data.report) {
+          const r = data.report;
+          document.getElementById('totalProyectos').textContent = r.total_proyectos || 0;
+          document.getElementById('presupuestoTotal').textContent = 
+            `$${(r.presupuesto_total_sistema || 0).toLocaleString('es-CO')}`;
+          document.getElementById('totalGastado').textContent = 
+            `$${(r.total_gastado_sistema || 0).toLocaleString('es-CO')}`;
+          document.getElementById('totalRecursos').textContent = r.total_recursos || 0;
+        }
+      } catch (error) {
+        console.error('Error al cargar reporte consolidado:', error);
+      }
+    }
+
+    // Generar reporte
+    async function generarReporte() {
+      const proyectoId = document.getElementById('proyectoSelect').value;
+      if (!proyectoId) {
+        alert('Por favor seleccione un proyecto');
+        return;
+      }
+
+      proyectoSeleccionado = proyectoId;
+
+      try {
+        const response = await fetch(`/api/reports/financial/${proyectoId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          mostrarReporte(data.report);
+        } else {
+          alert('Error al generar reporte');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al generar reporte');
+      }
+    }
+
+    // Mostrar reporte
+    function mostrarReporte(report) {
+      const g = report.general;
+
+      // Información general
+      document.getElementById('proyectoNombre').textContent = g.proyecto_nombre;
+      document.getElementById('proyectoEstado').textContent = g.estado;
+      document.getElementById('proyectoEstado').className = `badge badge-${g.estado}`;
+      document.getElementById('proyectoFechaInicio').textContent = g.fecha_inicio || 'N/A';
+      document.getElementById('proyectoFechaFin').textContent = g.fecha_fin || 'N/A';
+
+      // Presupuesto
+      document.getElementById('presupuestoTotalProyecto').textContent = 
+        `$${(g.presupuesto_total || 0).toLocaleString('es-CO')}`;
+      document.getElementById('presupuestoGastado').textContent = 
+        `$${(g.presupuesto_gastado || 0).toLocaleString('es-CO')}`;
+      document.getElementById('presupuestoDisponible').textContent = 
+        `$${(g.presupuesto_disponible || 0).toLocaleString('es-CO')}`;
+      document.getElementById('porcentajeEjecucion').textContent = 
+        `${(g.porcentaje_ejecucion || 0)}%`;
+
+      // Recursos
+      document.getElementById('totalRecursosProyecto').textContent = g.total_recursos || 0;
+      document.getElementById('costoTotalRecursos').textContent = 
+        `$${(g.costo_total_recursos || 0).toLocaleString('es-CO')}`;
+
+      // Gastos
+      document.getElementById('totalGastosProyecto').textContent = g.total_gastos || 0;
+      document.getElementById('montoTotalGastos').textContent = 
+        `$${(g.total_monto_gastos || 0).toLocaleString('es-CO')}`;
+
+      // Gastos por categoría
+      const tablaCategorias = document.getElementById('tablaCategorias');
+      if (report.gastosPorCategoria && report.gastosPorCategoria.length > 0) {
+        tablaCategorias.innerHTML = report.gastosPorCategoria.map(c => `
+          <tr>
+            <td>${c.categoria}</td>
+            <td>${c.cantidad}</td>
+            <td>$${c.total.toLocaleString('es-CO')}</td>
+            <td>$${c.promedio.toLocaleString('es-CO')}</td>
+          </tr>
+        `).join('');
+      } else {
+        tablaCategorias.innerHTML = '<tr><td colspan="4" class="text-center">No hay gastos registrados</td></tr>';
+      }
+
+      // Recursos por tipo
+      const tablaRecursos = document.getElementById('tablaRecursos');
+      if (report.recursosPorTipo && report.recursosPorTipo.length > 0) {
+        tablaRecursos.innerHTML = report.recursosPorTipo.map(r => `
+          <tr>
+            <td>${r.tipo}</td>
+            <td>${r.cantidad}</td>
+            <td>${r.cantidad_total}</td>
+            <td>$${r.costo_total.toLocaleString('es-CO')}</td>
+          </tr>
+        `).join('');
+      } else {
+        tablaRecursos.innerHTML = '<tr><td colspan="4" class="text-center">No hay recursos registrados</td></tr>';
+      }
+
+      // Mostrar contenedor
+      document.getElementById('reporteContainer').classList.remove('hidden');
+    }
+
+    // Limpiar reporte
+    function limpiarReporte() {
+      document.getElementById('proyectoSelect').value = '';
+      document.getElementById('reporteContainer').classList.add('hidden');
+      proyectoSeleccionado = null;
+    }
+
+    // Exportar a PDF
+    function exportarPDF() {
+      if (!proyectoSeleccionado) {
+        alert('Primero genere un reporte');
+        return;
+      }
+      window.open(`/api/reports/export/pdf/${proyectoSeleccionado}`, '_blank');
+    }
+
+    // Exportar a Excel
+    function exportarExcel() {
+      if (!proyectoSeleccionado) {
+        alert('Primero genere un reporte');
+        return;
+      }
+      window.open(`/api/reports/export/excel/${proyectoSeleccionado}`, '_blank');
+    }
+
+    // Inicializar
+    window.onload = async () => {
+      if (await verificarSesion()) {
+        await cargarProyectos();
+        await cargarReporteConsolidado();
+      }
+    };
+
+    // Funcionalidad de dropdowns
+    document.addEventListener('DOMContentLoaded', function() {
+      const dropdownButtons = document.querySelectorAll('.nav-dropdown-btn');
+      
+      dropdownButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const dropdown = this.parentElement;
+          const isOpen = dropdown.classList.contains('open');
+          
+          document.querySelectorAll('.nav-dropdown').forEach(dd => {
+            dd.classList.remove('open');
+          });
+          
+          if (!isOpen) {
+            dropdown.classList.add('open');
+          }
+        });
+      });
+      
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.nav-dropdown').forEach(dd => {
+          dd.classList.remove('open');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

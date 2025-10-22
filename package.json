@@ -17,6 +17,8 @@
   "author": "AgroTechNova Team",
   "license": "MIT",
   "dependencies": {
+    "exceljs": "^4.4.0",
+    "pdfkit": "^0.17.2",
     "sqlite3": "^5.1.6"
   },
   "engines": {

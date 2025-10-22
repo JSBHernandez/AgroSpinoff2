@@ -51,6 +51,19 @@
             <a href="inventario.html">Inventario</a>
           </div>
         </div>
+
+        <!-- Dropdown: Reportes y Documentación -->
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn">
+            Reportes y Documentación
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="nav-dropdown-content">
+            <a href="reportes.html">Reportes Financieros</a>
+            <a href="proyectosFinalizados.html">Proyectos Finalizados</a>
+            <a href="catalogo.html">Catálogo de Servicios</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -125,6 +138,28 @@
           <i class="fas fa-warehouse fa-3x" style="color: #1976d2; margin-bottom: 15px;"></i>
           <h3 style="color: #1976d2; margin-bottom: 10px;">Inventario</h3>
           <p style="color: #666; font-size: 14px;">Registra entradas y salidas de inventario</p>
+        </div>
+      </div>
+
+      <h3 style="color: #2e7d32; margin-top: 30px; margin-bottom: 15px; border-top: 2px solid #e8f5e9; padding-top: 20px;">📊 Reportes y Documentación</h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div class="dashboard-card" onclick="window.location.href='reportes.html'" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-chart-pie fa-3x" style="color: #7b1fa2; margin-bottom: 15px;"></i>
+          <h3 style="color: #7b1fa2; margin-bottom: 10px;">Reportes Financieros</h3>
+          <p style="color: #666; font-size: 14px;">Genera reportes y exporta a PDF/Excel</p>
+        </div>
+        
+        <div class="dashboard-card" onclick="window.location.href='proyectosFinalizados.html'" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-check-circle fa-3x" style="color: #7b1fa2; margin-bottom: 15px;"></i>
+          <h3 style="color: #7b1fa2; margin-bottom: 10px;">Proyectos Finalizados</h3>
+          <p style="color: #666; font-size: 14px;">Visualiza el historial de proyectos completados</p>
+        </div>
+        
+        <div class="dashboard-card" onclick="window.location.href='catalogo.html'" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-book fa-3x" style="color: #7b1fa2; margin-bottom: 15px;"></i>
+          <h3 style="color: #7b1fa2; margin-bottom: 10px;">Catálogo de Servicios</h3>
+          <p style="color: #666; font-size: 14px;">Explora nuestros servicios y soluciones</p>
         </div>
       </div>
     </section>
