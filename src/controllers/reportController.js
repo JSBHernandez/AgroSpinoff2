@@ -11,25 +11,30 @@ const ReportController = {
 
     ReportModel.getFinancialReport(proyectoId, (err, report) => {
       if (err) {
-        return res.status(500).json({
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
           success: false,
           message: 'Error al obtener reporte financiero',
           error: err.message
-        });
+        }));
+        return;
       }
 
       if (!report) {
-        return res.status(404).json({
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
           success: false,
           message: 'Proyecto no encontrado'
-        });
+        }));
+        return;
       }
 
       // Obtener detalles adicionales
       ReportModel.getExpensesByCategory(proyectoId, (err, expenses) => {
         ReportModel.getResourcesByType(proyectoId, (err2, resources) => {
           ReportModel.getInventoryMovements(proyectoId, (err3, inventory) => {
-            res.json({
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
               success: true,
               report: {
                 general: report,
@@ -37,7 +42,7 @@ const ReportController = {
                 recursosPorTipo: resources || [],
                 movimientosInventario: inventory || []
               }
-            });
+            }));
           });
         });
       });
@@ -130,10 +135,12 @@ const ReportController = {
 
     ReportModel.getFinancialReport(proyectoId, async (err, report) => {
       if (err || !report) {
-        return res.status(404).json({
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
           success: false,
           message: 'No se pudo generar el reporte'
-        });
+        }));
+        return;
       }
 
       try {
@@ -211,17 +218,20 @@ const ReportController = {
   getFinishedProjects: (req, res) => {
     ReportModel.getFinishedProjects((err, projects) => {
       if (err) {
-        return res.status(500).json({
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
           success: false,
           message: 'Error al obtener proyectos finalizados',
           error: err.message
-        });
+        }));
+        return;
       }
 
-      res.json({
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
         success: true,
         projects: projects || []
-      });
+      }));
     });
   },
 
@@ -231,17 +241,20 @@ const ReportController = {
   getConsolidatedReport: (req, res) => {
     ReportModel.getConsolidatedReport((err, report) => {
       if (err) {
-        return res.status(500).json({
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
           success: false,
           message: 'Error al obtener reporte consolidado',
           error: err.message
-        });
+        }));
+        return;
       }
 
-      res.json({
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
         success: true,
         report: report || {}
-      });
+      }));
     });
   }
 };

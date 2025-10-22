@@ -239,20 +239,32 @@
     async function cargarProyectos() {
       try {
         const response = await fetch('/api/reports/finished-projects');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
+        console.log('Respuesta del servidor:', data);
 
-        if (data.success && data.projects) {
+        if (data.success && data.projects && data.projects.length > 0) {
           proyectosData = data.projects;
+          console.log('Proyectos cargados:', proyectosData.length);
           mostrarProyectos(proyectosData);
           actualizarEstadisticas(proyectosData);
         } else {
+          console.log('No se encontraron proyectos finalizados');
           document.getElementById('tablaProyectos').innerHTML = 
             '<tr><td colspan="8" class="text-center">No se encontraron proyectos finalizados</td></tr>';
+          document.getElementById('totalFinalizados').textContent = '0';
+          document.getElementById('presupuestoTotal').textContent = '$0';
+          document.getElementById('totalEjecutado').textContent = '$0';
+          document.getElementById('eficienciaPromedio').textContent = '0%';
         }
       } catch (error) {
         console.error('Error al cargar proyectos:', error);
         document.getElementById('tablaProyectos').innerHTML = 
-          '<tr><td colspan="8" class="text-center">Error al cargar proyectos</td></tr>';
+          '<tr><td colspan="8" class="text-center">Error al cargar proyectos: ' + error.message + '</td></tr>';
       }
     }
 
@@ -266,19 +278,26 @@
       }
 
       tbody.innerHTML = proyectos.map(p => {
-        const eficiencia = p.presupuesto_total > 0 
-          ? ((1 - (p.presupuesto_gastado / p.presupuesto_total)) * 100).toFixed(1)
+        const presupuestoTotal = parseFloat(p.presupuesto_total || 0);
+        const presupuestoGastado = parseFloat(p.presupuesto_gastado || 0);
+        
+        const eficiencia = presupuestoTotal > 0 
+          ? ((1 - (presupuestoGastado / presupuestoTotal)) * 100).toFixed(1)
           : 0;
         const colorEficiencia = eficiencia >= 0 ? '#4caf50' : '#f44336';
+
+        // Formatear fechas
+        const fechaInicio = p.fecha_inicio ? new Date(p.fecha_inicio).toLocaleDateString('es-CO') : 'N/A';
+        const fechaFin = p.fecha_fin ? new Date(p.fecha_fin).toLocaleDateString('es-CO') : 'N/A';
 
         return `
           <tr>
             <td>${p.id}</td>
             <td><strong>${p.nombre}</strong></td>
-            <td>${p.fecha_inicio || 'N/A'}</td>
-            <td>${p.fecha_fin || 'N/A'}</td>
-            <td>$${(p.presupuesto_total || 0).toLocaleString('es-CO')}</td>
-            <td>$${(p.presupuesto_gastado || 0).toLocaleString('es-CO')}</td>
+            <td>${fechaInicio}</td>
+            <td>${fechaFin}</td>
+            <td>$${presupuestoTotal.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td>$${presupuestoGastado.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             <td><span style="color: ${colorEficiencia}; font-weight: bold;">${eficiencia}%</span></td>
             <td>
               <button onclick="verDetalles(${p.id})" class="btn-primary" style="padding: 5px 10px; font-size: 12px;">
@@ -293,12 +312,14 @@
     // Actualizar estadísticas
     function actualizarEstadisticas(proyectos) {
       const total = proyectos.length;
-      const presupuestoTotal = proyectos.reduce((sum, p) => sum + (p.presupuesto_total || 0), 0);
-      const ejecutado = proyectos.reduce((sum, p) => sum + (p.presupuesto_gastado || 0), 0);
+      const presupuestoTotal = proyectos.reduce((sum, p) => sum + parseFloat(p.presupuesto_total || 0), 0);
+      const ejecutado = proyectos.reduce((sum, p) => sum + parseFloat(p.presupuesto_gastado || 0), 0);
       
       const eficiencias = proyectos.map(p => {
-        return p.presupuesto_total > 0 
-          ? ((1 - (p.presupuesto_gastado / p.presupuesto_total)) * 100)
+        const presupTotal = parseFloat(p.presupuesto_total || 0);
+        const presupGastado = parseFloat(p.presupuesto_gastado || 0);
+        return presupTotal > 0 
+          ? ((1 - (presupGastado / presupTotal)) * 100)
           : 0;
       });
       const eficienciaPromedio = eficiencias.length > 0 
@@ -306,8 +327,8 @@
         : 0;
 
       document.getElementById('totalFinalizados').textContent = total;
-      document.getElementById('presupuestoTotal').textContent = `$${presupuestoTotal.toLocaleString('es-CO')}`;
-      document.getElementById('totalEjecutado').textContent = `$${ejecutado.toLocaleString('es-CO')}`;
+      document.getElementById('presupuestoTotal').textContent = `$${presupuestoTotal.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('totalEjecutado').textContent = `$${ejecutado.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       document.getElementById('eficienciaPromedio').textContent = `${eficienciaPromedio}%`;
     }
 
@@ -333,19 +354,26 @@
 
       proyectoActual = proyecto;
 
+      const presupuestoTotal = parseFloat(proyecto.presupuesto_total || 0);
+      const presupuestoGastado = parseFloat(proyecto.presupuesto_gastado || 0);
+
+      // Formatear fechas
+      const fechaInicio = proyecto.fecha_inicio ? new Date(proyecto.fecha_inicio).toLocaleDateString('es-CO') : 'N/A';
+      const fechaFin = proyecto.fecha_fin ? new Date(proyecto.fecha_fin).toLocaleDateString('es-CO') : 'N/A';
+
       // Llenar modal
       document.getElementById('detalleNombre').textContent = proyecto.nombre;
       document.getElementById('detalleDescripcion').textContent = proyecto.descripcion || 'Sin descripción';
       document.getElementById('detalleEstado').textContent = proyecto.estado;
-      document.getElementById('detalleFechaInicio').textContent = proyecto.fecha_inicio || 'N/A';
-      document.getElementById('detalleFechaFin').textContent = proyecto.fecha_fin || 'N/A';
+      document.getElementById('detalleFechaInicio').textContent = fechaInicio;
+      document.getElementById('detalleFechaFin').textContent = fechaFin;
       document.getElementById('detallePresupuesto').textContent = 
-        `$${(proyecto.presupuesto_total || 0).toLocaleString('es-CO')}`;
+        `$${presupuestoTotal.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       document.getElementById('detalleGastado').textContent = 
-        `$${(proyecto.presupuesto_gastado || 0).toLocaleString('es-CO')}`;
+        `$${presupuestoGastado.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-      const eficiencia = proyecto.presupuesto_total > 0 
-        ? ((1 - (proyecto.presupuesto_gastado / proyecto.presupuesto_total)) * 100).toFixed(1)
+      const eficiencia = presupuestoTotal > 0 
+        ? ((1 - (presupuestoGastado / presupuestoTotal)) * 100).toFixed(1)
         : 0;
       document.getElementById('detalleEficiencia').textContent = `${eficiencia}%`;
 

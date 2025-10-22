@@ -189,8 +189,13 @@
     }
 
     // Cerrar sesión
-    function cerrarSesion() {
-      document.getElementById('logoutBtn').click();
+    async function cerrarSesion() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login.html';
+      } catch (error) {
+        window.location.href = '/login.html';
+      }
     }
 
     // Cargar proveedores

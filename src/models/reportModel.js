@@ -110,19 +110,19 @@ const ReportModel = {
         p.id,
         p.nombre,
         p.descripcion,
-        p.categoria,
-        p.ubicacion,
+        c.nombre as categoria,
         p.fecha_inicio,
         p.fecha_fin,
         p.estado,
-        pr.monto_total as presupuesto,
-        pr.monto_gastado as gastado,
+        COALESCE(pr.monto_total, 0) as presupuesto_total,
+        COALESCE(pr.monto_gastado, 0) as presupuesto_gastado,
         (SELECT COUNT(*) FROM recursos WHERE proyecto_id = p.id) as recursos_asignados,
         (SELECT COUNT(*) FROM gastos WHERE proyecto_id = p.id) as gastos_registrados,
         u.nombre as responsable
       FROM proyectos p
       LEFT JOIN presupuestos pr ON pr.proyecto_id = p.id
       LEFT JOIN usuarios u ON u.id = p.responsable_id
+      LEFT JOIN categorias_proyecto c ON c.id = p.categoria_id
       WHERE p.estado = 'finalizado'
       ORDER BY p.fecha_fin DESC
     `;
