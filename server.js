@@ -26,6 +26,9 @@ const { handleMilestoneRoutes } = require('./src/routes/milestoneRoutes');
 const handleResourceRoutes = require('./src/routes/resourceRoutes');
 const handleBudgetRoutes = require('./src/routes/budgetRoutes');
 const handleExpenseRoutes = require('./src/routes/expenseRoutes');
+const handleProviderRoutes = require('./src/routes/providerRoutes');
+const handleProductRoutes = require('./src/routes/productRoutes');
+const handleInventoryRoutes = require('./src/routes/inventoryRoutes');
 const { startSessionCleaner } = require('./src/utils/sessionManager');
 
 // Configuración del servidor
@@ -145,6 +148,27 @@ function handleAPIRoutes(req, res) {
     return;
   }
 
+  // Rutas de proveedores (/api/providers/*) - Sprint 4
+  if (pathname.startsWith('/api/providers')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleProviderRoutes(req, res, method, pathname, urlParts);
+    return;
+  }
+
+  // Rutas de productos (/api/products/*) - Sprint 4
+  if (pathname.startsWith('/api/products')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleProductRoutes(req, res, method, pathname, urlParts);
+    return;
+  }
+
+  // Rutas de inventario (/api/inventory/*) - Sprint 4
+  if (pathname.startsWith('/api/inventory')) {
+    const urlParts = pathname.split('/').filter(part => part);
+    handleInventoryRoutes(req, res, method, pathname, urlParts);
+    return;
+  }
+
   // Ruta API no encontrada
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
@@ -188,6 +212,12 @@ const server = http.createServer((req, res) => {
     pathname = '/pages/presupuestos.html';
   } else if (pathname === '/gastos' || pathname === '/gastos.html') {
     pathname = '/pages/gastos.html';
+  } else if (pathname === '/proveedores' || pathname === '/proveedores.html') {
+    pathname = '/pages/proveedores.html';
+  } else if (pathname === '/productos' || pathname === '/productos.html') {
+    pathname = '/pages/productos.html';
+  } else if (pathname === '/inventario' || pathname === '/inventario.html') {
+    pathname = '/pages/inventario.html';
   } else if (pathname === '/agendaReuniones' || pathname === '/agendaReuniones.html') {
     pathname = '/pages/agendaReuniones.html';
   } else if (pathname === '/contacto' || pathname === '/contacto.html') {

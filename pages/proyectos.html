@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Proyectos - AgroTechnova</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../public/css/base.css">
     <link rel="stylesheet" href="../public/css/proyectos.css">
 </head>
@@ -24,6 +25,32 @@
                 <a href="proyectos.html" class="active">Proyectos</a>
                 <a href="usuarios.html">Usuarios</a>
                 <a href="agendaReuniones.html">Agenda</a>
+                
+                <!-- Dropdown: Gestión Financiera -->
+                <div class="nav-dropdown">
+                  <button class="nav-dropdown-btn">
+                    Gestión Financiera
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <div class="nav-dropdown-content">
+                    <a href="recursos.html">Recursos</a>
+                    <a href="presupuestos.html">Presupuestos</a>
+                    <a href="gastos.html">Gastos</a>
+                  </div>
+                </div>
+                
+                <!-- Dropdown: Inventario y Proveedores -->
+                <div class="nav-dropdown">
+                  <button class="nav-dropdown-btn">
+                    Inventario y Proveedores
+                    <i class="fas fa-chevron-down"></i>
+                  </button>
+                  <div class="nav-dropdown-content">
+                    <a href="proveedores.html">Proveedores</a>
+                    <a href="productos.html">Productos</a>
+                    <a href="inventario.html">Inventario</a>
+                  </div>
+                </div>
             </nav>
         </header>
 
@@ -445,6 +472,38 @@
                 closeModal();
             }
         }
+
+        // Funcionalidad de dropdowns
+        document.addEventListener('DOMContentLoaded', function() {
+          const dropdownButtons = document.querySelectorAll('.nav-dropdown-btn');
+          
+          dropdownButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              const dropdown = this.parentElement;
+              const isOpen = dropdown.classList.contains('open');
+              
+              // Cerrar todos los dropdowns
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                dd.classList.remove('open');
+              });
+              
+              // Abrir/cerrar el dropdown actual
+              if (!isOpen) {
+                dropdown.classList.add('open');
+              }
+            });
+          });
+          
+          // Cerrar dropdowns al hacer clic fuera
+          document.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-dropdown')) {
+              document.querySelectorAll('.nav-dropdown').forEach(dd => {
+                dd.classList.remove('open');
+              });
+            }
+          });
+        });
     </script>
 </body>
 </html>

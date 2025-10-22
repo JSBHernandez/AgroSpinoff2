@@ -24,6 +24,9 @@ const BudgetModel = require('../models/budgetModel');
 const ExpenseModel = require('../models/expenseModel');
 const TaskModel = require('../models/taskModel');
 const TaskAssignmentModel = require('../models/taskAssignmentModel');
+const ProviderModel = require('../models/providerModel');
+const ProductModel = require('../models/productModel');
+const InventoryModel = require('../models/inventoryModel');
 
 async function runMigrations() {
   console.log('🚀 Iniciando migraciones de base de datos...\n');
@@ -104,6 +107,21 @@ async function runMigrations() {
     await TaskAssignmentModel.createTable();
     console.log('✅ Tabla de asignaciones de tareas creada\n');
 
+    // 16. Crear tabla de proveedores (Sprint 4 - RF16)
+    console.log('📦 Paso 16: Creando tabla de proveedores...');
+    await ProviderModel.createTable();
+    console.log('✅ Tabla de proveedores creada\n');
+
+    // 17. Crear tabla de productos (Sprint 4 - RF06, RF43, RF45)
+    console.log('📦 Paso 17: Creando tabla de productos...');
+    await ProductModel.createTable();
+    console.log('✅ Tabla de productos creada\n');
+
+    // 18. Crear tabla de movimientos de inventario (Sprint 4 - RF08, RF09)
+    console.log('📦 Paso 18: Creando tabla de movimientos de inventario...');
+    await InventoryModel.createTable();
+    console.log('✅ Tabla de movimientos de inventario creada\n');
+
     console.log('='.repeat(50));
     console.log('✨ MIGRACIONES COMPLETADAS EXITOSAMENTE');
     console.log('='.repeat(50));
@@ -124,6 +142,7 @@ async function runMigrations() {
     console.log('   - Tablas Sprint 1: roles, usuarios');
     console.log('   - Tablas Sprint 2: categorias_proyecto, proyectos, fases, hitos');
     console.log('   - Tablas Sprint 3: recursos, presupuestos, gastos, tareas, asignaciones_tareas');
+    console.log('   - Tablas Sprint 4: proveedores, productos, movimientos_inventario');
     console.log('');
 
   } catch (error) {
@@ -158,6 +177,11 @@ async function initDatabase() {
     await ExpenseModel.createTable();
     await TaskModel.createTable();
     await TaskAssignmentModel.createTable();
+
+    // Sprint 4: Inventario y Proveedores
+    await ProviderModel.createTable();
+    await ProductModel.createTable();
+    await InventoryModel.createTable();
 
   } catch (error) {
     // Si las tablas ya existen, no es error fatal
