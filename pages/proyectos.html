@@ -479,7 +479,7 @@
           
           dropdownButtons.forEach(btn => {
             btn.addEventListener('click', function(e) {
-              e.preventDefault();
+              e.stopPropagation();
               const dropdown = this.parentElement;
               const isOpen = dropdown.classList.contains('open');
               
@@ -496,12 +496,10 @@
           });
           
           // Cerrar dropdowns al hacer clic fuera
-          document.addEventListener('click', function(e) {
-            if (!e.target.closest('.nav-dropdown')) {
-              document.querySelectorAll('.nav-dropdown').forEach(dd => {
-                dd.classList.remove('open');
-              });
-            }
+          document.addEventListener('click', function() {
+            document.querySelectorAll('.nav-dropdown').forEach(dd => {
+              dd.classList.remove('open');
+            });
           });
         });
     </script>
