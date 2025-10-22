@@ -37,7 +37,7 @@ const ReportModel = {
       WHERE p.id = ?
     `;
 
-    db.get(query, [proyectoId], callback);
+    db.getDatabase().get(query, [proyectoId], callback);
   },
 
   /**
@@ -56,7 +56,7 @@ const ReportModel = {
       ORDER BY total DESC
     `;
 
-    db.all(query, [proyectoId], callback);
+    db.getDatabase().all(query, [proyectoId], callback);
   },
 
   /**
@@ -75,7 +75,7 @@ const ReportModel = {
       ORDER BY costo_total DESC
     `;
 
-    db.all(query, [proyectoId], callback);
+    db.getDatabase().all(query, [proyectoId], callback);
   },
 
   /**
@@ -98,13 +98,14 @@ const ReportModel = {
       ORDER BY mi.fecha DESC
     `;
 
-    db.all(query, [proyectoId], callback);
+    db.getDatabase().all(query, [proyectoId], callback);
   },
 
   /**
    * Obtener resumen de todos los proyectos finalizados
    */
   getFinishedProjects: (callback) => {
+    console.log('🔍 [reportModel] Ejecutando consulta de proyectos finalizados...');
     const query = `
       SELECT 
         p.id,
@@ -127,7 +128,19 @@ const ReportModel = {
       ORDER BY p.fecha_fin DESC
     `;
 
-    db.all(query, [], callback);
+    // Usar getDatabase() para acceder a la instancia de SQLite con callbacks
+    db.getDatabase().all(query, [], (err, rows) => {
+      if (err) {
+        console.error('❌ [reportModel] Error en consulta:', err);
+        callback(err, null);
+      } else {
+        console.log(`✅ [reportModel] Consulta exitosa. Filas encontradas: ${rows ? rows.length : 0}`);
+        if (rows && rows.length > 0) {
+          console.log('📦 [reportModel] Primera fila:', rows[0]);
+        }
+        callback(null, rows);
+      }
+    });
   },
 
   /**
@@ -147,7 +160,7 @@ const ReportModel = {
       FROM proyectos
     `;
 
-    db.get(query, [], callback);
+    db.getDatabase().get(query, [], callback);
   }
 };
 

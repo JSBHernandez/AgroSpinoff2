@@ -6,6 +6,159 @@
   <title>Reportes Financieros - AgroTechNova</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../public/css/base.css">
+  <style>
+    /* Animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideOutRight {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(100px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Cards de estadísticas mejoradas */
+    .stat-card-modern {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card-modern:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .stat-card-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--card-color-1), var(--card-color-2));
+    }
+
+    /* Barra de progreso circular */
+    .circular-progress {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: conic-gradient(
+        var(--progress-color) calc(var(--progress) * 1%),
+        #e0e0e0 0
+      );
+    }
+
+    .circular-progress::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .circular-progress-text {
+      position: relative;
+      z-index: 1;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--progress-color);
+    }
+
+    /* Tabla mejorada */
+    .table-modern {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table-modern thead tr {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .table-modern th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .table-modern th:first-child {
+      border-top-left-radius: 10px;
+    }
+
+    .table-modern th:last-child {
+      border-top-right-radius: 10px;
+    }
+
+    .table-modern tbody tr {
+      transition: all 0.3s;
+      border-left: 4px solid transparent;
+    }
+
+    .table-modern tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    .table-modern tbody tr:hover {
+      background: #e8f5e9;
+      border-left-color: #4CAF50;
+      transform: scale(1.01);
+    }
+
+    .table-modern td {
+      padding: 18px 15px;
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .table-modern {
+        font-size: 12px;
+      }
+      
+      .table-modern th,
+      .table-modern td {
+        padding: 10px 8px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -73,26 +226,70 @@
       <span>Reportes Financieros</span>
     </div>
 
-    <!-- Reporte Consolidado -->
-    <section class="stats-section" style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-      <h2 style="color: #2e7d32; margin-bottom: 20px;">📈 Reporte Consolidado del Sistema</h2>
-      
-      <div class="stats-cards">
-        <div class="card">
-          <h3>Total Proyectos</h3>
-          <p class="stat-value" id="totalProyectos">0</p>
-        </div>
-        <div class="card">
-          <h3>Presupuesto Total</h3>
-          <p class="stat-value" id="presupuestoTotal">$0</p>
-        </div>
-        <div class="card">
-          <h3>Total Gastado</h3>
-          <p class="stat-value" style="color: #f57c00;" id="totalGastado">$0</p>
-        </div>
-        <div class="card">
-          <h3>Total Recursos</h3>
-          <p class="stat-value" id="totalRecursos">0</p>
+    <!-- Reporte Consolidado Mejorado -->
+    <section style="margin-bottom: 30px;">
+      <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px;">
+        <h2 style="color: #2e7d32; margin-bottom: 25px; display: flex; align-items: center; gap: 12px;">
+          <i class="fas fa-chart-line" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 32px;"></i>
+          Reporte Consolidado del Sistema
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+          <!-- Total Proyectos -->
+          <div class="stat-card-modern" style="--card-color-1: #667eea; --card-color-2: #764ba2;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                <i class="fas fa-project-diagram"></i>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Proyectos</div>
+                <div id="totalProyectos" style="font-size: 32px; font-weight: bold; color: #667eea;">0</div>
+                <div style="font-size: 12px; color: #999;">Activos en el sistema</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Presupuesto Total -->
+          <div class="stat-card-modern" style="--card-color-1: #11998e; --card-color-2: #38ef7d;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                <i class="fas fa-wallet"></i>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Presupuesto Total</div>
+                <div id="presupuestoTotal" style="font-size: 28px; font-weight: bold; color: #11998e;">$0</div>
+                <div style="font-size: 12px; color: #999;">Inversión planificada</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Gastado -->
+          <div class="stat-card-modern" style="--card-color-1: #f093fb; --card-color-2: #f5576c;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Gastado</div>
+                <div id="totalGastado" style="font-size: 28px; font-weight: bold; color: #f5576c;">$0</div>
+                <div style="font-size: 12px; color: #999;">Ejecutado</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Recursos -->
+          <div class="stat-card-modern" style="--card-color-1: #4facfe; --card-color-2: #00f2fe;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                <i class="fas fa-tools"></i>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Total Recursos</div>
+                <div id="totalRecursos" style="font-size: 32px; font-weight: bold; color: #4facfe;">0</div>
+                <div style="font-size: 12px; color: #999;">Asignados</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -125,113 +322,141 @@
           </div>
         </div>
 
-        <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h3 id="proyectoNombre" style="color: #2e7d32; font-size: 24px; margin-bottom: 10px;">Nombre del Proyecto</h3>
+        <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          <h3 id="proyectoNombre" style="color: #2e7d32; font-size: 26px; margin-bottom: 15px; font-weight: 700;">Nombre del Proyecto</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div>
-              <strong>Estado:</strong>
-              <span id="proyectoEstado" class="badge">-</span>
+            <div style="background: white; padding: 15px; border-radius: 10px;">
+              <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Estado</div>
+              <span id="proyectoEstado" class="badge" style="font-size: 14px;">-</span>
             </div>
-            <div>
-              <strong>Fecha Inicio:</strong>
-              <span id="proyectoFechaInicio">-</span>
+            <div style="background: white; padding: 15px; border-radius: 10px;">
+              <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Fecha Inicio</div>
+              <div id="proyectoFechaInicio" style="font-size: 16px; font-weight: 600; color: #333;">-</div>
             </div>
-            <div>
-              <strong>Fecha Fin:</strong>
-              <span id="proyectoFechaFin">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Presupuesto -->
-        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h3 style="color: #1976d2; margin-bottom: 15px;">💰 Presupuesto</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div>
-              <div style="font-size: 14px; color: #666;">Presupuesto Total</div>
-              <div id="presupuestoTotalProyecto" style="font-size: 24px; font-weight: bold; color: #1976d2;">$0</div>
-            </div>
-            <div>
-              <div style="font-size: 14px; color: #666;">Gastado</div>
-              <div id="presupuestoGastado" style="font-size: 24px; font-weight: bold; color: #f57c00;">$0</div>
-            </div>
-            <div>
-              <div style="font-size: 14px; color: #666;">Disponible</div>
-              <div id="presupuestoDisponible" style="font-size: 24px; font-weight: bold; color: #4caf50;">$0</div>
-            </div>
-            <div>
-              <div style="font-size: 14px; color: #666;">% Ejecución</div>
-              <div id="porcentajeEjecucion" style="font-size: 24px; font-weight: bold; color: #673ab7;">0%</div>
+            <div style="background: white; padding: 15px; border-radius: 10px;">
+              <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Fecha Fin</div>
+              <div id="proyectoFechaFin" style="font-size: 16px; font-weight: 600; color: #333;">-</div>
             </div>
           </div>
         </div>
 
-        <!-- Recursos -->
-        <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <h3 style="color: #f57c00; margin-bottom: 15px;">🔧 Recursos</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div>
-              <div style="font-size: 14px; color: #666;">Total Recursos</div>
-              <div id="totalRecursosProyecto" style="font-size: 24px; font-weight: bold; color: #f57c00;">0</div>
+        <!-- Presupuesto con Indicador Circular -->
+        <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          <h3 style="color: #1976d2; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+            <i class="fas fa-wallet"></i> Presupuesto
+          </h3>
+          
+          <div style="display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: center;">
+            <!-- Indicador Circular -->
+            <div style="display: flex; align-items: center; justify-content: center;">
+              <div class="circular-progress" id="circularProgress" style="--progress: 0; --progress-color: #4CAF50;">
+                <div style="background: white; width: 90px; height: 90px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <div id="porcentajeEjecucion" style="font-size: 24px; font-weight: bold; color: #1976d2;">0%</div>
+                  <div style="font-size: 11px; color: #666;">Ejecutado</div>
+                </div>
+              </div>
             </div>
-            <div>
-              <div style="font-size: 14px; color: #666;">Costo Total</div>
-              <div id="costoTotalRecursos" style="font-size: 24px; font-weight: bold; color: #f57c00;">$0</div>
+
+            <!-- Detalles del Presupuesto -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+              <div style="background: white; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-money-bill-wave" style="color: #1976d2;"></i> Presupuesto Total
+                </div>
+                <div id="presupuestoTotalProyecto" style="font-size: 26px; font-weight: bold; color: #1976d2;">$0</div>
+              </div>
+              <div style="background: white; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-arrow-up" style="color: #f57c00;"></i> Gastado
+                </div>
+                <div id="presupuestoGastado" style="font-size: 26px; font-weight: bold; color: #f57c00;">$0</div>
+              </div>
+              <div style="background: white; padding: 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                  <i class="fas fa-piggy-bank" style="color: #4caf50;"></i> Disponible
+                </div>
+                <div id="presupuestoDisponible" style="font-size: 26px; font-weight: bold; color: #4caf50;">$0</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Gastos -->
-        <div style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); padding: 20px; border-radius: 8px;">
-          <h3 style="color: #d32f2f; margin-bottom: 15px;">💳 Gastos</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div>
-              <div style="font-size: 14px; color: #666;">Total Gastos</div>
-              <div id="totalGastosProyecto" style="font-size: 24px; font-weight: bold; color: #d32f2f;">0</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Recursos -->
+          <div class="stat-card-modern" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); --card-color-1: #f57c00; --card-color-2: #ff9800;">
+            <h3 style="color: #f57c00; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+              <i class="fas fa-tools"></i> Recursos
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Total Recursos</div>
+                <div id="totalRecursosProyecto" style="font-size: 28px; font-weight: bold; color: #f57c00;">0</div>
+              </div>
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Costo Total</div>
+                <div id="costoTotalRecursos" style="font-size: 28px; font-weight: bold; color: #f57c00;">$0</div>
+              </div>
             </div>
-            <div>
-              <div style="font-size: 14px; color: #666;">Monto Total</div>
-              <div id="montoTotalGastos" style="font-size: 24px; font-weight: bold; color: #d32f2f;">$0</div>
+          </div>
+
+          <!-- Gastos -->
+          <div class="stat-card-modern" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); --card-color-1: #d32f2f; --card-color-2: #f44336;">
+            <h3 style="color: #d32f2f; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+              <i class="fas fa-credit-card"></i> Gastos
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Total Gastos</div>
+                <div id="totalGastosProyecto" style="font-size: 28px; font-weight: bold; color: #d32f2f;">0</div>
+              </div>
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                <div style="font-size: 13px; color: #666; margin-bottom: 5px;">Monto Total</div>
+                <div id="montoTotalGastos" style="font-size: 28px; font-weight: bold; color: #d32f2f;">$0</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Detalles: Gastos por Categoría -->
-      <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: #2e7d32; margin-bottom: 20px;">📊 Gastos por Categoría</h3>
-        <div class="table-container">
-          <table>
+      <section style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="color: #2e7d32; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+          <i class="fas fa-chart-pie"></i> Gastos por Categoría
+        </h3>
+        <div class="table-container" style="overflow-x: auto;">
+          <table class="table-modern">
             <thead>
               <tr>
-                <th>Categoría</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-                <th>Promedio</th>
+                <th><i class="fas fa-tag"></i> Categoría</th>
+                <th><i class="fas fa-hashtag"></i> Cantidad</th>
+                <th><i class="fas fa-dollar-sign"></i> Total</th>
+                <th><i class="fas fa-calculator"></i> Promedio</th>
               </tr>
             </thead>
             <tbody id="tablaCategorias">
-              <tr><td colspan="4" class="text-center">No hay datos</td></tr>
+              <tr><td colspan="4" style="text-align: center; padding: 30px; color: #999;">No hay datos disponibles</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
       <!-- Detalles: Recursos por Tipo -->
-      <section style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: #2e7d32; margin-bottom: 20px;">🔧 Recursos por Tipo</h3>
-        <div class="table-container">
-          <table>
+      <section style="background: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <h3 style="color: #2e7d32; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 600;">
+          <i class="fas fa-cubes"></i> Recursos por Tipo
+        </h3>
+        <div class="table-container" style="overflow-x: auto;">
+          <table class="table-modern">
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Cantidad Total</th>
-                <th>Costo Total</th>
+                <th><i class="fas fa-layer-group"></i> Tipo</th>
+                <th><i class="fas fa-hashtag"></i> Cantidad</th>
+                <th><i class="fas fa-cubes"></i> Cantidad Total</th>
+                <th><i class="fas fa-dollar-sign"></i> Costo Total</th>
               </tr>
             </thead>
             <tbody id="tablaRecursos">
-              <tr><td colspan="4" class="text-center">No hay datos</td></tr>
+              <tr><td colspan="4" style="text-align: center; padding: 30px; color: #999;">No hay datos disponibles</td></tr>
             </tbody>
           </table>
         </div>
@@ -239,8 +464,58 @@
     </div>
   </div>
 
+  <!-- Contenedor de Notificaciones -->
+  <div id="notificaciones" style="position: fixed; top: 80px; right: 20px; z-index: 10000;"></div>
+
   <script>
     let proyectoSeleccionado = null;
+
+    // Función para mostrar notificaciones
+    function mostrarNotificacion(mensaje, tipo = 'success') {
+      const contenedor = document.getElementById('notificaciones');
+      const notif = document.createElement('div');
+      
+      const colores = {
+        success: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        error: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        warning: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        info: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+      };
+      
+      const iconos = {
+        success: 'fa-check-circle',
+        error: 'fa-times-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+      };
+      
+      notif.style.cssText = `
+        background: ${colores[tipo]};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease-out;
+      `;
+      
+      notif.innerHTML = `
+        <i class="fas ${iconos[tipo]}" style="font-size: 20px;"></i>
+        <span style="flex: 1;">${mensaje}</span>
+        <i class="fas fa-times" style="cursor: pointer; opacity: 0.8;" onclick="this.parentElement.remove()"></i>
+      `;
+      
+      contenedor.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => notif.remove(), 300);
+      }, 4000);
+    }
 
     // Verificar sesión y cargar datos
     async function verificarSesion() {
@@ -307,11 +582,14 @@
     async function generarReporte() {
       const proyectoId = document.getElementById('proyectoSelect').value;
       if (!proyectoId) {
-        alert('Por favor seleccione un proyecto');
+        mostrarNotificacion('Por favor seleccione un proyecto', 'warning');
         return;
       }
 
       proyectoSeleccionado = proyectoId;
+
+      // Mostrar indicador de carga
+      mostrarNotificacion('Generando reporte...', 'info');
 
       try {
         const response = await fetch(`/api/reports/financial/${proyectoId}`);
@@ -319,12 +597,13 @@
 
         if (data.success) {
           mostrarReporte(data.report);
+          mostrarNotificacion('Reporte generado exitosamente', 'success');
         } else {
-          alert('Error al generar reporte');
+          mostrarNotificacion('Error al generar reporte', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Error al generar reporte');
+        mostrarNotificacion('Error al generar reporte', 'error');
       }
     }
 
@@ -346,8 +625,27 @@
         `$${(g.presupuesto_gastado || 0).toLocaleString('es-CO')}`;
       document.getElementById('presupuestoDisponible').textContent = 
         `$${(g.presupuesto_disponible || 0).toLocaleString('es-CO')}`;
-      document.getElementById('porcentajeEjecucion').textContent = 
-        `${(g.porcentaje_ejecucion || 0)}%`;
+      
+      // Actualizar porcentaje y color del indicador circular
+      const porcentaje = g.porcentaje_ejecucion || 0;
+      document.getElementById('porcentajeEjecucion').textContent = `${porcentaje}%`;
+      
+      // Actualizar el progreso circular
+      const circularProgress = document.getElementById('circularProgress');
+      circularProgress.style.setProperty('--progress', porcentaje);
+      
+      // Cambiar color según el porcentaje
+      let color;
+      if (porcentaje < 50) {
+        color = '#4CAF50'; // Verde - bajo consumo
+      } else if (porcentaje < 75) {
+        color = '#FF9800'; // Naranja - consumo medio
+      } else if (porcentaje < 90) {
+        color = '#f57c00'; // Naranja oscuro
+      } else {
+        color = '#f44336'; // Rojo - consumo alto
+      }
+      circularProgress.style.setProperty('--progress-color', color);
 
       // Recursos
       document.getElementById('totalRecursosProyecto').textContent = g.total_recursos || 0;
@@ -398,23 +696,26 @@
       document.getElementById('proyectoSelect').value = '';
       document.getElementById('reporteContainer').classList.add('hidden');
       proyectoSeleccionado = null;
+      mostrarNotificacion('Reporte limpiado', 'info');
     }
 
     // Exportar a PDF
     function exportarPDF() {
       if (!proyectoSeleccionado) {
-        alert('Primero genere un reporte');
+        mostrarNotificacion('Primero genere un reporte', 'warning');
         return;
       }
+      mostrarNotificacion('Exportando a PDF...', 'info');
       window.open(`/api/reports/export/pdf/${proyectoSeleccionado}`, '_blank');
     }
 
     // Exportar a Excel
     function exportarExcel() {
       if (!proyectoSeleccionado) {
-        alert('Primero genere un reporte');
+        mostrarNotificacion('Primero genere un reporte', 'warning');
         return;
       }
+      mostrarNotificacion('Exportando a Excel...', 'info');
       window.open(`/api/reports/export/excel/${proyectoSeleccionado}`, '_blank');
     }
 

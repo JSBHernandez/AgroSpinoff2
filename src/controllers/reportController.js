@@ -216,8 +216,10 @@ const ReportController = {
    * Obtener proyectos finalizados
    */
   getFinishedProjects: (req, res) => {
+    console.log('🔍 [reportController] Consultando proyectos finalizados...');
     ReportModel.getFinishedProjects((err, projects) => {
       if (err) {
+        console.error('❌ [reportController] Error:', err);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: false,
@@ -225,6 +227,11 @@ const ReportController = {
           error: err.message
         }));
         return;
+      }
+
+      console.log(`✅ [reportController] Proyectos encontrados: ${projects ? projects.length : 0}`);
+      if (projects && projects.length > 0) {
+        console.log('📦 [reportController] Primer proyecto:', projects[0]);
       }
 
       res.writeHead(200, { 'Content-Type': 'application/json' });

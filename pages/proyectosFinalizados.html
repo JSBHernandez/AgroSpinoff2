@@ -153,7 +153,7 @@
     </section>
 
     <!-- Modal de Detalles -->
-    <div id="modalDetalles" class="modal">
+    <div id="modalDetalles" class="modal" style="display: none;">
       <div class="modal-content" style="max-width: 800px;">
         <div class="modal-header">
           <h2><i class="fas fa-info-circle"></i> Detalles del Proyecto</h2>
@@ -238,22 +238,42 @@
     // Cargar proyectos finalizados
     async function cargarProyectos() {
       try {
-        const response = await fetch('/api/reports/finished-projects');
+        console.log('🔄 Iniciando carga de proyectos finalizados...');
+        console.log('🌐 URL de la petición:', window.location.origin + '/api/reports/finished-projects');
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+        
+        const response = await fetch('/api/reports/finished-projects', {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        clearTimeout(timeoutId);
+        
+        console.log('📡 Respuesta recibida, status:', response.status);
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
         const data = await response.json();
-        console.log('Respuesta del servidor:', data);
+        console.log('📦 Datos parseados:', JSON.stringify(data, null, 2));
+        console.log('✅ Success:', data.success);
+        console.log('📋 Projects:', data.projects);
+        console.log('🔢 Length:', data.projects ? data.projects.length : 'undefined');
 
         if (data.success && data.projects && data.projects.length > 0) {
           proyectosData = data.projects;
-          console.log('Proyectos cargados:', proyectosData.length);
+          console.log('✅ Proyectos cargados exitosamente:', proyectosData.length);
+          console.log('📊 Primer proyecto:', proyectosData[0]);
           mostrarProyectos(proyectosData);
           actualizarEstadisticas(proyectosData);
         } else {
-          console.log('No se encontraron proyectos finalizados');
+          console.warn('⚠️ No se encontraron proyectos finalizados o data.success es false');
+          console.log('Data completo:', data);
           document.getElementById('tablaProyectos').innerHTML = 
             '<tr><td colspan="8" class="text-center">No se encontraron proyectos finalizados</td></tr>';
           document.getElementById('totalFinalizados').textContent = '0';
@@ -262,9 +282,18 @@
           document.getElementById('eficienciaPromedio').textContent = '0%';
         }
       } catch (error) {
-        console.error('Error al cargar proyectos:', error);
+        console.error('❌ Error al cargar proyectos:', error);
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Stack:', error.stack);
+        
+        let errorMsg = 'Error al cargar proyectos: ' + error.message;
+        if (error.name === 'AbortError') {
+          errorMsg = 'La petición tardó demasiado (timeout). El servidor puede estar sobrecargado o no responde.';
+        }
+        
         document.getElementById('tablaProyectos').innerHTML = 
-          '<tr><td colspan="8" class="text-center">Error al cargar proyectos: ' + error.message + '</td></tr>';
+          '<tr><td colspan="8" class="text-center" style="color: red;">' + errorMsg + '</td></tr>';
       }
     }
 
@@ -350,7 +379,10 @@
     // Ver detalles
     function verDetalles(proyectoId) {
       const proyecto = proyectosData.find(p => p.id === proyectoId);
-      if (!proyecto) return;
+      if (!proyecto) {
+        console.error('Proyecto no encontrado:', proyectoId);
+        return;
+      }
 
       proyectoActual = proyecto;
 
@@ -378,12 +410,16 @@
       document.getElementById('detalleEficiencia').textContent = `${eficiencia}%`;
 
       // Mostrar modal
-      document.getElementById('modalDetalles').style.display = 'block';
+      const modal = document.getElementById('modalDetalles');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
     }
 
     // Cerrar modal
     function cerrarModal() {
-      document.getElementById('modalDetalles').style.display = 'none';
+      const modal = document.getElementById('modalDetalles');
+      modal.classList.remove('show');
+      modal.style.display = 'none';
       proyectoActual = null;
     }
 
@@ -402,12 +438,12 @@
     };
 
     // Cerrar modal al hacer clic fuera
-    window.onclick = function(event) {
+    window.addEventListener('click', function(event) {
       const modal = document.getElementById('modalDetalles');
-      if (event.target == modal) {
+      if (event.target === modal) {
         cerrarModal();
       }
-    };
+    });
 
     // Funcionalidad de dropdowns
     document.addEventListener('DOMContentLoaded', function() {

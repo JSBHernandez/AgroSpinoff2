@@ -6,6 +6,171 @@
   <title>Inventario - AgroTechNova</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../public/css/base.css">
+  <style>
+    /* Animaciones */
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutRight {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Estilos del modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 35px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-height: 90vh;
+      overflow-y: auto;
+      width: 100%;
+      animation: slideDown 0.3s ease;
+    }
+
+    /* Tabs mejoradas */
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      color: #666;
+      transition: all 0.3s;
+      position: relative;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .tab-btn:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .tab-btn.active {
+      color: #4CAF50;
+      background: #e8f5e9;
+      border-bottom: 3px solid #4CAF50 !important;
+    }
+
+    /* Estilos de inputs con focus */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4CAF50 !important;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: #81c784;
+    }
+
+    /* Scrollbar personalizada */
+    .modal-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .modal-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+      border-radius: 10px;
+    }
+
+    /* Badge de stock */
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stock-ok {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .stock-bajo {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .stock-critico {
+      background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Tabla responsive */
+    @media (max-width: 768px) {
+      table {
+        font-size: 12px;
+      }
+      
+      th, td {
+        padding: 10px 8px !important;
+      }
+      
+      .modal-content {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -50,6 +215,19 @@
             <a href="inventario.html" class="active">Inventario</a>
           </div>
         </div>
+
+        <!-- Dropdown: Reportes y Documentación -->
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-btn">
+            Reportes y Documentación
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="nav-dropdown-content">
+            <a href="reportes.html">Reportes Financieros</a>
+            <a href="proyectosFinalizados.html">Proyectos Finalizados</a>
+            <a href="catalogo.html">Catálogo de Servicios</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -60,274 +238,543 @@
       <span>Inventario</span>
     </div>
 
-    <!-- Pestañas de navegación -->
-    <section style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-      <div style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
-        <button class="tab-btn active" data-tab="productos" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold; border-bottom: 3px solid #4CAF50;">📋 Productos</button>
-        <button class="tab-btn" data-tab="movimientos" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold;">📊 Movimientos</button>
-        <button class="tab-btn" data-tab="alertas" style="padding: 10px 20px; border: none; background: none; cursor: pointer; font-weight: bold;">⚠️ Alertas</button>
+    <!-- Estadísticas Modernas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+      <!-- Total Productos -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; color: white; box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; opacity: 0.1;">📦</div>
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 500;">Total Productos</div>
+          <div style="font-size: 36px; font-weight: bold; margin-bottom: 8px;" id="totalProductos">0</div>
+          <div style="font-size: 12px; opacity: 0.8;">📊 En inventario</div>
+        </div>
       </div>
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-primary" id="btnNuevoProducto">➕ Nuevo Producto</button>
-        <button class="btn-success" id="btnRegistrarEntrada">📥 Registrar Entrada</button>
-        <button class="btn-danger" id="btnRegistrarSalida">📤 Registrar Salida</button>
-        <button class="btn btn-secondary" onclick="cargarDatos()">🔄 Actualizar</button>
-      </div>
-    </section>
 
-    <!-- Estadísticas -->
-    <div class="stats-cards">
-      <div class="card">
-        <h3>Total Productos</h3>
-        <p class="stat-value" id="totalProductos">0</p>
+      <!-- Valor Total -->
+      <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 15px; padding: 25px; color: white; box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; opacity: 0.1;">💰</div>
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 500;">Valor Total Inventario</div>
+          <div style="font-size: 36px; font-weight: bold; margin-bottom: 8px;" id="valorTotal">$0</div>
+          <div style="font-size: 12px; opacity: 0.8;">💵 Inversión total</div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Valor Total Inventario</h3>
-        <p class="stat-value" id="valorTotal">$0</p>
+
+      <!-- Disponibles -->
+      <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 15px; padding: 25px; color: white; box-shadow: 0 8px 16px rgba(56, 239, 125, 0.3); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; opacity: 0.1;">✅</div>
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 500;">Productos Disponibles</div>
+          <div style="font-size: 36px; font-weight: bold; margin-bottom: 8px;" id="totalDisponibles">0</div>
+          <div style="font-size: 12px; opacity: 0.8;">� Stock suficiente</div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Productos Disponibles</h3>
-        <p class="stat-value" style="color: #28a745;" id="totalDisponibles">0</p>
-      </div>
-      <div class="card">
-        <h3>Stock Bajo</h3>
-        <p class="stat-value" style="color: #dc3545;" id="totalStockBajo">0</p>
+
+      <!-- Stock Bajo -->
+      <div style="background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); border-radius: 15px; padding: 25px; color: white; box-shadow: 0 8px 16px rgba(255, 106, 0, 0.3); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; opacity: 0.1;">⚠️</div>
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px; font-weight: 500;">Stock Bajo</div>
+          <div style="font-size: 36px; font-weight: bold; margin-bottom: 8px;" id="totalStockBajo">0</div>
+          <div style="font-size: 12px; opacity: 0.8;">🔴 Requiere atención</div>
+        </div>
       </div>
     </div>
 
+    <!-- Pestañas de navegación mejoradas -->
+    <section style="background: white; padding: 0; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden;">
+      <div style="display: flex; gap: 0; border-bottom: 2px solid #e0e0e0; background: #f8f9fa;">
+        <button class="tab-btn active" data-tab="productos">
+          <i class="fas fa-box"></i> Productos
+        </button>
+        <button class="tab-btn" data-tab="movimientos">
+          <i class="fas fa-exchange-alt"></i> Movimientos
+        </button>
+        <button class="tab-btn" data-tab="alertas">
+          <i class="fas fa-exclamation-triangle"></i> Alertas
+        </button>
+      </div>
+      <div style="padding: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn-primary" id="btnNuevoProducto" style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-plus-circle"></i> Nuevo Producto
+        </button>
+        <button class="btn-success" id="btnRegistrarEntrada" style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-arrow-down"></i> Registrar Entrada
+        </button>
+        <button class="btn-danger" id="btnRegistrarSalida" style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-arrow-up"></i> Registrar Salida
+        </button>
+        <button class="btn btn-secondary" onclick="cargarDatos()" style="display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+      </div>
+    </section>
+
     <!-- PESTAÑA: PRODUCTOS -->
     <div id="tabProductos" class="tab-content">
-      <!-- Formulario de producto -->
-      <div id="formProductoContainer" class="form-container hidden">
-        <h2 id="formProductoTitle">Nuevo Producto</h2>
-        <form id="formProducto">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre del producto*</label>
-              <input type="text" id="producto_nombre" required>
-            </div>
-            <div class="form-group">
-              <label>Tipo*</label>
-              <select id="producto_tipo" required>
-                <option value="">Seleccione...</option>
-                <option value="insumo">Insumo</option>
-                <option value="herramienta">Herramienta</option>
-                <option value="equipo">Equipo</option>
-                <option value="materia_prima">Materia Prima</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Categoría</label>
-              <input type="text" id="producto_categoria" placeholder="Ej: Fertilizantes, Semillas...">
-            </div>
-            <div class="form-group">
-              <label>Unidad de medida*</label>
-              <input type="text" id="producto_unidad" placeholder="kg, litros, unidades..." required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Stock inicial</label>
-              <input type="number" id="producto_stock_actual" min="0" value="0">
-            </div>
-            <div class="form-group">
-              <label>Stock mínimo*</label>
-              <input type="number" id="producto_stock_minimo" min="0" value="0" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Costo unitario*</label>
-              <input type="number" id="producto_costo_unitario" min="0" step="0.01" required>
-            </div>
-            <div class="form-group">
-              <label>Proveedor</label>
-              <select id="producto_proveedor_id">
-                <option value="">Sin proveedor</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Descripción</label>
-            <textarea id="producto_descripcion" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 10px;">
-              <input type="checkbox" id="producto_es_organico">
-              <span>Producto orgánico</span>
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="btnCancelarProducto">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
-          </div>
-        </form>
+      <!-- Barra de búsqueda -->
+      <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div style="position: relative; max-width: 500px;">
+          <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+          <input type="text" id="searchProductos" placeholder="Buscar productos por nombre, tipo o categoría..." 
+                 style="width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; transition: all 0.3s;"
+                 onkeyup="filtrarProductos()">
+        </div>
       </div>
 
-      <!-- Tabla de productos -->
-      <div class="table-container">
-        <h2>📋 Listado de Productos</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Categoría</th>
-              <th>Stock Actual</th>
-              <th>Stock Mínimo</th>
-              <th>Costo Unit.</th>
-              <th>Proveedor</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyProductos">
-            <tr><td colspan="9" class="text-center">Cargando productos...</td></tr>
-          </tbody>
-        </table>
+      <!-- Tabla de productos mejorada -->
+      <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="margin: 0; color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-boxes"></i> Listado de Productos
+          </h2>
+          <span id="contadorProductos" style="background: #e8f5e9; color: #2e7d32; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px;">
+            0 productos
+          </span>
+        </div>
+        
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+            <thead>
+              <tr style="background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%); color: white;">
+                <th style="padding: 15px; text-align: left; font-weight: 600; border-top-left-radius: 10px;">
+                  <i class="fas fa-tag"></i> Nombre
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-layer-group"></i> Tipo
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-folder"></i> Categoría
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-cubes"></i> Stock
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-chart-line"></i> Mínimo
+                </th>
+                <th style="padding: 15px; text-align: right; font-weight: 600;">
+                  <i class="fas fa-dollar-sign"></i> Costo Unit.
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-truck"></i> Proveedor
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-traffic-light"></i> Estado
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600; border-top-right-radius: 10px;">
+                  <i class="fas fa-cog"></i> Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tbodyProductos">
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                  <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                  <div>Cargando productos...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Nuevo/Editar Producto -->
+    <div id="modalProducto" class="modal" style="display: none;">
+      <div class="modal-content" style="max-width: 800px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+          <h2 id="formProductoTitle" style="margin: 0; color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-box-open"></i> Nuevo Producto
+          </h2>
+          <button onclick="cerrarModalProducto()" style="background: none; border: none; font-size: 28px; color: #999; cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">&times;</button>
+        </div>
+
+        <form id="formProducto">
+          <div style="display: grid; gap: 20px;">
+            <!-- Nombre y Tipo -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-tag" style="color: #4CAF50;"></i> Nombre del producto *
+                </label>
+                <input type="text" id="producto_nombre" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                       placeholder="Ej: Fertilizante NPK 10-30-10">
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #2196F3;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-layer-group" style="color: #2196F3;"></i> Tipo *
+                </label>
+                <select id="producto_tipo" required 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                  <option value="">Seleccione...</option>
+                  <option value="insumo">Insumo</option>
+                  <option value="herramienta">Herramienta</option>
+                  <option value="equipo">Equipo</option>
+                  <option value="materia_prima">Materia Prima</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Categoría y Unidad -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-folder" style="color: #FF9800;"></i> Categoría
+                </label>
+                <input type="text" id="producto_categoria" 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                       placeholder="Ej: Fertilizantes, Semillas...">
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #9C27B0;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-balance-scale" style="color: #9C27B0;"></i> Unidad de medida *
+                </label>
+                <input type="text" id="producto_unidad" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                       placeholder="kg, litros, unidades...">
+              </div>
+            </div>
+
+            <!-- Stock Inicial y Mínimo -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #00BCD4;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-cubes" style="color: #00BCD4;"></i> Stock inicial
+                </label>
+                <input type="number" id="producto_stock_actual" min="0" value="0" 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF5722;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-chart-line" style="color: #FF5722;"></i> Stock mínimo *
+                </label>
+                <input type="number" id="producto_stock_minimo" min="0" value="0" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+            </div>
+
+            <!-- Costo y Proveedor -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-dollar-sign" style="color: #4CAF50;"></i> Costo unitario *
+                </label>
+                <input type="number" id="producto_costo_unitario" min="0" step="0.01" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                       placeholder="0.00">
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #607D8B;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-truck" style="color: #607D8B;"></i> Proveedor
+                </label>
+                <select id="producto_proveedor_id" 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                  <option value="">Sin proveedor</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #795548;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-align-left" style="color: #795548;"></i> Descripción
+              </label>
+              <textarea id="producto_descripcion" rows="3" 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical;"
+                        placeholder="Descripción detallada del producto..."></textarea>
+            </div>
+
+            <!-- Checkbox Orgánico -->
+            <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+              <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                <input type="checkbox" id="producto_es_organico" 
+                       style="width: 20px; height: 20px; cursor: pointer;">
+                <span style="font-weight: 600; color: #2e7d32;">
+                  <i class="fas fa-leaf"></i> Producto orgánico certificado
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Botones del formulario -->
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalProducto()" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-save"></i> Guardar Producto
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
     <!-- PESTAÑA: MOVIMIENTOS -->
     <div id="tabMovimientos" class="tab-content hidden">
-      <!-- Formulario de entrada -->
-      <div id="formEntradaContainer" class="form-container hidden">
-        <h2>📥 Registrar Entrada de Producto</h2>
-        <form id="formEntrada">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Producto*</label>
-              <select id="entrada_producto_id" required>
-                <option value="">Seleccione un producto...</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Cantidad*</label>
-              <input type="number" id="entrada_cantidad" min="1" required>
-            </div>
+      <!-- Tabla de movimientos mejorada -->
+      <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="margin: 0; color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-exchange-alt"></i> Historial de Movimientos
+          </h2>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="filtrarMovimientos('todos')" id="btnFiltroTodos" 
+                    style="padding: 8px 16px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+              <i class="fas fa-list"></i> Todos
+            </button>
+            <button onclick="filtrarMovimientos('entrada')" id="btnFiltroEntradas"
+                    style="padding: 8px 16px; border: 2px solid #4CAF50; background: white; color: #4CAF50; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+              <i class="fas fa-arrow-down"></i> Entradas
+            </button>
+            <button onclick="filtrarMovimientos('salida')" id="btnFiltroSalidas"
+                    style="padding: 8px 16px; border: 2px solid #f44336; background: white; color: #f44336; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+              <i class="fas fa-arrow-up"></i> Salidas
+            </button>
           </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Costo unitario*</label>
-              <input type="number" id="entrada_costo_unitario" min="0" step="0.01" required>
-            </div>
-            <div class="form-group">
-              <label>Fecha*</label>
-              <input type="date" id="entrada_fecha" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Descripción</label>
-            <textarea id="entrada_descripcion" rows="2" placeholder="Ej: Compra a proveedor XYZ"></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="btnCancelarEntrada">Cancelar</button>
-            <button type="submit" class="btn-success">Registrar Entrada</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Formulario de salida -->
-      <div id="formSalidaContainer" class="form-container hidden">
-        <h2>📤 Registrar Salida de Producto</h2>
-        <form id="formSalida">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Producto*</label>
-              <select id="salida_producto_id" required>
-                <option value="">Seleccione un producto...</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Cantidad*</label>
-              <input type="number" id="salida_cantidad" min="1" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Proyecto (opcional)</label>
-              <select id="salida_proyecto_id">
-                <option value="">Sin proyecto asociado</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Fecha*</label>
-              <input type="date" id="salida_fecha" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Descripción*</label>
-            <textarea id="salida_descripcion" rows="2" placeholder="Ej: Entrega para proyecto X" required></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="btnCancelarSalida">Cancelar</button>
-            <button type="submit" class="btn-danger">Registrar Salida</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Tabla de movimientos -->
-      <div class="table-container">
-        <h2>📊 Historial de Movimientos</h2>
-        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-          <button class="btn btn-secondary" onclick="filtrarMovimientos('todos')">Todos</button>
-          <button class="btn-success" onclick="filtrarMovimientos('entrada')">Entradas</button>
-          <button class="btn-danger" onclick="filtrarMovimientos('salida')">Salidas</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Tipo</th>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Costo Unit.</th>
-              <th>Costo Total</th>
-              <th>Proyecto</th>
-              <th>Usuario</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyMovimientos">
-            <tr><td colspan="8" class="text-center">Cargando movimientos...</td></tr>
-          </tbody>
-        </table>
+        
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+            <thead>
+              <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <th style="padding: 15px; text-align: left; font-weight: 600; border-top-left-radius: 10px;">
+                  <i class="fas fa-calendar"></i> Fecha
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-exchange-alt"></i> Tipo
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-box"></i> Producto
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-hashtag"></i> Cantidad
+                </th>
+                <th style="padding: 15px; text-align: right; font-weight: 600;">
+                  <i class="fas fa-dollar-sign"></i> Costo Unit.
+                </th>
+                <th style="padding: 15px; text-align: right; font-weight: 600;">
+                  <i class="fas fa-calculator"></i> Costo Total
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-project-diagram"></i> Proyecto
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600; border-top-right-radius: 10px;">
+                  <i class="fas fa-user"></i> Usuario
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMovimientos">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                  <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                  <div>Cargando movimientos...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
     <!-- PESTAÑA: ALERTAS -->
     <div id="tabAlertas" class="tab-content hidden">
-      <div class="table-container">
-        <h2>⚠️ Productos con Stock Bajo</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Stock Actual</th>
-              <th>Stock Mínimo</th>
-              <th>Diferencia</th>
-              <th>Proveedor</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyAlertas">
-            <tr><td colspan="6" class="text-center">Cargando alertas...</td></tr>
-          </tbody>
-        </table>
+      <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="margin: 0; color: #d32f2f; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-exclamation-triangle"></i> Productos con Stock Bajo
+          </h2>
+          <span id="contadorAlertas" style="background: #ffebee; color: #d32f2f; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px;">
+            0 alertas
+          </span>
+        </div>
+        
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+            <thead>
+              <tr style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white;">
+                <th style="padding: 15px; text-align: left; font-weight: 600; border-top-left-radius: 10px;">
+                  <i class="fas fa-box"></i> Producto
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-cubes"></i> Stock Actual
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-chart-line"></i> Stock Mínimo
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600;">
+                  <i class="fas fa-minus-circle"></i> Diferencia
+                </th>
+                <th style="padding: 15px; text-align: left; font-weight: 600;">
+                  <i class="fas fa-truck"></i> Proveedor
+                </th>
+                <th style="padding: 15px; text-align: center; font-weight: 600; border-top-right-radius: 10px;">
+                  <i class="fas fa-cog"></i> Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAlertas">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                  <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i>
+                  <div>Cargando alertas...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para Registrar Entrada -->
+    <div id="modalEntrada" class="modal" style="display: none;">
+      <div class="modal-content" style="max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+          <h2 style="margin: 0; color: #4CAF50; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-arrow-circle-down"></i> Registrar Entrada
+          </h2>
+          <button onclick="cerrarModalEntrada()" style="background: none; border: none; font-size: 28px; color: #999; cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">&times;</button>
+        </div>
+
+        <form id="formEntrada">
+          <div style="display: grid; gap: 20px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-box" style="color: #4CAF50;"></i> Producto *
+                </label>
+                <select id="entrada_producto_id" required 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                  <option value="">Seleccione un producto...</option>
+                </select>
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #2196F3;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-hashtag" style="color: #2196F3;"></i> Cantidad *
+                </label>
+                <input type="number" id="entrada_cantidad" min="1" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-dollar-sign" style="color: #FF9800;"></i> Costo unitario *
+                </label>
+                <input type="number" id="entrada_costo_unitario" min="0" step="0.01" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                       placeholder="0.00">
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #9C27B0;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-calendar" style="color: #9C27B0;"></i> Fecha *
+                </label>
+                <input type="date" id="entrada_fecha" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #607D8B;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-align-left" style="color: #607D8B;"></i> Descripción
+              </label>
+              <textarea id="entrada_descripcion" rows="2" 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical;"
+                        placeholder="Ej: Compra a proveedor XYZ"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalEntrada()" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="submit" class="btn-success" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-check"></i> Registrar Entrada
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para Registrar Salida -->
+    <div id="modalSalida" class="modal" style="display: none;">
+      <div class="modal-content" style="max-width: 600px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+          <h2 style="margin: 0; color: #f44336; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-arrow-circle-up"></i> Registrar Salida
+          </h2>
+          <button onclick="cerrarModalSalida()" style="background: none; border: none; font-size: 28px; color: #999; cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">&times;</button>
+        </div>
+
+        <form id="formSalida">
+          <div style="display: grid; gap: 20px;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #f44336;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-box" style="color: #f44336;"></i> Producto *
+                </label>
+                <select id="salida_producto_id" required 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                  <option value="">Seleccione un producto...</option>
+                </select>
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF5722;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-hashtag" style="color: #FF5722;"></i> Cantidad *
+                </label>
+                <input type="number" id="salida_cantidad" min="1" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #2196F3;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-project-diagram" style="color: #2196F3;"></i> Proyecto
+                </label>
+                <select id="salida_proyecto_id" 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                  <option value="">Sin proyecto asociado</option>
+                </select>
+              </div>
+
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #9C27B0;">
+                <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                  <i class="fas fa-calendar" style="color: #9C27B0;"></i> Fecha *
+                </label>
+                <input type="date" id="salida_fecha" required 
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+              </div>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #607D8B;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-align-left" style="color: #607D8B;"></i> Descripción *
+              </label>
+              <textarea id="salida_descripcion" rows="2" required 
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; resize: vertical;"
+                        placeholder="Ej: Entrega para proyecto X"></textarea>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalSalida()" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="submit" class="btn-danger" style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-check"></i> Registrar Salida
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -405,41 +852,107 @@
         const response = await fetch('/api/products');
         const data = await response.json();
         
-        const tbody = document.getElementById('tbodyProductos');
-        
-        if (!data.products || data.products.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="9" class="text-center">No hay productos registrados</td></tr>';
-          actualizarEstadisticas([]);
-          return;
-        }
-
-        tbody.innerHTML = data.products.map(p => {
-          const stockBajo = p.stock_actual <= p.stock_minimo;
-          return `
-            <tr style="${stockBajo ? 'background-color: #fff3cd;' : ''}">
-              <td>${p.nombre} ${p.es_organico ? '🌿' : ''}</td>
-              <td>${p.tipo}</td>
-              <td>${p.categoria || 'N/A'}</td>
-              <td style="${stockBajo ? 'color: #dc3545; font-weight: bold;' : ''}">${p.stock_actual} ${p.unidad}</td>
-              <td>${p.stock_minimo} ${p.unidad}</td>
-              <td>$${parseFloat(p.costo_unitario).toFixed(2)}</td>
-              <td>${p.proveedor_nombre || 'N/A'}</td>
-              <td><span class="badge badge-${p.estado}">${p.estado}</span></td>
-              <td>
-                <button class="btn-small btn-edit" onclick="editarProducto(${p.id})">Editar</button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-
-        actualizarEstadisticas(data.products);
-        
-        // Actualizar selectores
-        actualizarSelectoresProductos(data.products);
+        todosLosProductos = data.products || [];
+        mostrarProductos(todosLosProductos);
+        actualizarEstadisticas(todosLosProductos);
+        actualizarSelectoresProductos(todosLosProductos);
       } catch (error) {
         console.error('Error al cargar productos:', error);
-        alert('Error al cargar productos');
+        const tbody = document.getElementById('tbodyProductos');
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px; color: #e74c3c;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px;"></i>
+              <div>Error al cargar productos</div>
+            </td>
+          </tr>
+        `;
       }
+    }
+
+    // Mostrar productos en la tabla
+    function mostrarProductos(productos) {
+      const tbody = document.getElementById('tbodyProductos');
+      const contador = document.getElementById('contadorProductos');
+      
+      contador.textContent = `${productos.length} producto${productos.length !== 1 ? 's' : ''}`;
+      
+      if (!productos || productos.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+              <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+              <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">No hay productos registrados</div>
+              <div style="font-size: 14px;">Haz clic en "Nuevo Producto" para comenzar</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = productos.map((p, index) => {
+        const stockBajo = p.stock_actual <= p.stock_minimo;
+        const stockCritico = p.stock_actual < (p.stock_minimo / 2);
+        
+        let stockBadge = '';
+        if (stockCritico) {
+          stockBadge = '<span class="stock-badge stock-critico"><i class="fas fa-exclamation-circle"></i> Crítico</span>';
+        } else if (stockBajo) {
+          stockBadge = '<span class="stock-badge stock-bajo"><i class="fas fa-exclamation-triangle"></i> Bajo</span>';
+        } else {
+          stockBadge = '<span class="stock-badge stock-ok"><i class="fas fa-check-circle"></i> OK</span>';
+        }
+        
+        const rowStyle = index % 2 === 0 ? 'background: #f8f9fa;' : 'background: white;';
+        const alertStyle = stockBajo ? 'border-left: 4px solid #f44336;' : 'border-left: 4px solid transparent;';
+        
+        return `
+          <tr style="${rowStyle} ${alertStyle} transition: all 0.3s;" 
+              onmouseover="this.style.background='#e8f5e9'; this.style.transform='scale(1.01)';" 
+              onmouseout="this.style.background='${index % 2 === 0 ? '#f8f9fa' : 'white'}'; this.style.transform='scale(1)';">
+            <td style="padding: 18px 15px; font-weight: 600; color: #333;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                  ${p.nombre.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <div>${p.nombre}</div>
+                  ${p.es_organico ? '<div style="font-size: 11px; color: #4CAF50; font-weight: 600;"><i class="fas fa-leaf"></i> Orgánico</div>' : ''}
+                </div>
+              </div>
+            </td>
+            <td style="padding: 18px 15px; color: #666;">
+              <span style="background: #e3f2fd; color: #1976d2; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                ${p.tipo}
+              </span>
+            </td>
+            <td style="padding: 18px 15px; color: #666;">${p.categoria || '<span style="color: #ccc;">N/A</span>'}</td>
+            <td style="padding: 18px 15px; text-align: center;">
+              <div style="font-weight: bold; font-size: 16px; ${stockBajo ? 'color: #f44336;' : 'color: #4CAF50;'}">${p.stock_actual}</div>
+              <div style="font-size: 11px; color: #999;">${p.unidad}</div>
+            </td>
+            <td style="padding: 18px 15px; text-align: center; color: #666;">
+              <div style="font-weight: 600;">${p.stock_minimo}</div>
+              <div style="font-size: 11px; color: #999;">${p.unidad}</div>
+            </td>
+            <td style="padding: 18px 15px; text-align: right; font-family: monospace; color: #4CAF50; font-weight: 600; font-size: 15px;">
+              $${parseFloat(p.costo_unitario).toFixed(2)}
+            </td>
+            <td style="padding: 18px 15px; color: #666;">
+              ${p.proveedor_nombre ? `<div style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-truck" style="color: #607D8B;"></i>${p.proveedor_nombre}</div>` : '<span style="color: #ccc;">Sin proveedor</span>'}
+            </td>
+            <td style="padding: 18px 15px; text-align: center;">${stockBadge}</td>
+            <td style="padding: 18px 15px; text-align: center;">
+              <button onclick="editarProducto(${p.id})" 
+                      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.3s;"
+                      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)';"
+                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     // Actualizar estadísticas
@@ -581,47 +1094,127 @@
       }
     }
 
+    // Variables globales para productos
+    let todosLosProductos = [];
+    let todosLosMovimientos = [];
+    let filtroActualMovimientos = 'todos';
+
+    // Función para mostrar notificaciones
+    function mostrarNotificacion(mensaje, tipo) {
+      const notificacion = document.createElement('div');
+      const icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+      const color = tipo === 'success' ? 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' : 'linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)';
+      
+      notificacion.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${color};
+        color: white;
+        padding: 18px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        animation: slideInRight 0.4s ease;
+        max-width: 400px;
+      `;
+      
+      notificacion.innerHTML = `
+        <i class="fas ${icono}" style="font-size: 20px;"></i>
+        <span>${mensaje}</span>
+      `;
+      
+      document.body.appendChild(notificacion);
+      
+      setTimeout(() => {
+        notificacion.style.animation = 'slideOutRight 0.4s ease';
+        setTimeout(() => notificacion.remove(), 400);
+      }, 3000);
+    }
+
+    // Funciones para cerrar modales
+    function cerrarModalProducto() {
+      document.getElementById('modalProducto').style.display = 'none';
+      document.getElementById('formProducto').reset();
+      productoEditando = null;
+    }
+
+    function cerrarModalEntrada() {
+      document.getElementById('modalEntrada').style.display = 'none';
+      document.getElementById('formEntrada').reset();
+    }
+
+    function cerrarModalSalida() {
+      document.getElementById('modalSalida').style.display = 'none';
+      document.getElementById('formSalida').reset();
+    }
+
+    // Cerrar modales al hacer clic fuera
+    window.onclick = function(event) {
+      const modalProducto = document.getElementById('modalProducto');
+      const modalEntrada = document.getElementById('modalEntrada');
+      const modalSalida = document.getElementById('modalSalida');
+      
+      if (event.target === modalProducto) cerrarModalProducto();
+      if (event.target === modalEntrada) cerrarModalEntrada();
+      if (event.target === modalSalida) cerrarModalSalida();
+    };
+
+    // Filtrar productos
+    function filtrarProductos() {
+      const searchTerm = document.getElementById('searchProductos').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        mostrarProductos(todosLosProductos);
+        return;
+      }
+
+      const productosFiltrados = todosLosProductos.filter(producto => {
+        return (
+          producto.nombre.toLowerCase().includes(searchTerm) ||
+          (producto.tipo && producto.tipo.toLowerCase().includes(searchTerm)) ||
+          (producto.categoria && producto.categoria.toLowerCase().includes(searchTerm))
+        );
+      });
+
+      mostrarProductos(productosFiltrados);
+    }
+
     // Botones principales
     document.getElementById('btnNuevoProducto').addEventListener('click', () => {
       productoEditando = null;
-      document.getElementById('formProductoTitle').textContent = 'Nuevo Producto';
+      document.getElementById('formProductoTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Nuevo Producto';
       document.getElementById('formProducto').reset();
-      document.getElementById('formProductoContainer').classList.remove('hidden');
+      document.getElementById('modalProducto').style.display = 'flex';
       document.querySelectorAll('.tab-btn')[0].click();
     });
 
     document.getElementById('btnRegistrarEntrada').addEventListener('click', () => {
       document.getElementById('formEntrada').reset();
       document.getElementById('entrada_fecha').value = new Date().toISOString().split('T')[0];
-      document.getElementById('formEntradaContainer').classList.remove('hidden');
-      document.getElementById('formSalidaContainer').classList.add('hidden');
+      document.getElementById('modalEntrada').style.display = 'flex';
       document.querySelectorAll('.tab-btn')[1].click();
     });
 
     document.getElementById('btnRegistrarSalida').addEventListener('click', () => {
       document.getElementById('formSalida').reset();
       document.getElementById('salida_fecha').value = new Date().toISOString().split('T')[0];
-      document.getElementById('formSalidaContainer').classList.remove('hidden');
-      document.getElementById('formEntradaContainer').classList.add('hidden');
+      document.getElementById('modalSalida').style.display = 'flex';
       document.querySelectorAll('.tab-btn')[1].click();
-    });
-
-    // Cancelar formularios
-    document.getElementById('btnCancelarProducto').addEventListener('click', () => {
-      document.getElementById('formProductoContainer').classList.add('hidden');
-    });
-
-    document.getElementById('btnCancelarEntrada').addEventListener('click', () => {
-      document.getElementById('formEntradaContainer').classList.add('hidden');
-    });
-
-    document.getElementById('btnCancelarSalida').addEventListener('click', () => {
-      document.getElementById('formSalidaContainer').classList.add('hidden');
     });
 
     // Guardar producto
     document.getElementById('formProducto').addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      const btnSubmit = e.target.querySelector('button[type="submit"]');
+      const textoOriginal = btnSubmit.innerHTML;
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
       const producto = {
         nombre: document.getElementById('producto_nombre').value,
@@ -649,8 +1242,8 @@
         const data = await response.json();
 
         if (response.ok) {
-          alert(data.message || 'Producto guardado exitosamente');
-          document.getElementById('formProductoContainer').classList.add('hidden');
+          mostrarNotificacion(data.message || 'Producto guardado exitosamente', 'success');
+          cerrarModalProducto();
           await cargarProductos();
         } else {
           alert(data.message || 'Error al guardar producto');
