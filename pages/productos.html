@@ -147,85 +147,130 @@
 
   <!-- Modal Crear/Editar Producto -->
   <div id="modalProducto" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 700px;">
-      <div class="modal-header">
-        <h2 id="modalTitle">Nuevo Producto</h2>
-        <span class="close" onclick="cerrarModal()">&times;</span>
+    <div class="modal-content" style="max-width: 800px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+        <h2 id="modalTitle" style="margin: 0; color: #2e7d32; display: flex; align-items: center; gap: 10px;">
+          <i class="fas fa-box-open"></i> Nuevo Producto
+        </h2>
+        <button onclick="cerrarModal()" style="background: none; border: none; font-size: 28px; color: #999; cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.3s;">&times;</button>
       </div>
+
       <form id="formProducto">
         <input type="hidden" id="producto_id">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre *</label>
-            <input type="text" id="nombre" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+        <div style="display: grid; gap: 20px;">
+          <!-- Nombre y Tipo -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-tag" style="color: #4CAF50;"></i> Nombre del producto *
+              </label>
+              <input type="text" id="nombre" required 
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                     placeholder="Ej: Fertilizante NPK 10-30-10">
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #2196F3;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-layer-group" style="color: #2196F3;"></i> Tipo *
+              </label>
+              <select id="tipo" required 
+                      style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                <option value="">Seleccione...</option>
+                <option value="insumo">Insumo</option>
+                <option value="herramienta">Herramienta</option>
+                <option value="equipo">Equipo</option>
+                <option value="semilla">Semilla</option>
+                <option value="fertilizante">Fertilizante</option>
+                <option value="pesticida">Pesticida</option>
+                <option value="materia_prima">Materia Prima</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Tipo *</label>
-            <select id="tipo" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-              <option value="">Seleccione...</option>
-              <option value="insumo">Insumo</option>
-              <option value="herramienta">Herramienta</option>
-              <option value="equipo">Equipo</option>
-              <option value="semilla">Semilla</option>
-              <option value="fertilizante">Fertilizante</option>
-              <option value="pesticida">Pesticida</option>
-              <option value="otro">Otro</option>
-            </select>
+          <!-- Categoría y Unidad -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-folder" style="color: #FF9800;"></i> Categoría
+              </label>
+              <input type="text" id="categoria" 
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                     placeholder="Ej: Fertilizantes, Semillas...">
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #9C27B0;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-balance-scale" style="color: #9C27B0;"></i> Unidad de medida *
+              </label>
+              <input type="text" id="unidad" required 
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                     placeholder="kg, litros, unidades...">
+            </div>
           </div>
 
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Categoría</label>
-            <input type="text" id="categoria" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+          <!-- Stock Actual y Mínimo -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #00BCD4;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-cubes" style="color: #00BCD4;"></i> Stock actual
+              </label>
+              <input type="number" id="stock_actual" min="0" value="0" step="0.01"
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #FF5722;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-chart-line" style="color: #FF5722;"></i> Stock mínimo *
+              </label>
+              <input type="number" id="stock_minimo" min="0" value="5" step="0.01" required 
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+            </div>
           </div>
 
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Unidad *</label>
-            <select id="unidad" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-              <option value="">Seleccione...</option>
-              <option value="kg">Kilogramos (kg)</option>
-              <option value="litros">Litros (L)</option>
-              <option value="unidades">Unidades</option>
-              <option value="bultos">Bultos</option>
-              <option value="cajas">Cajas</option>
-              <option value="metros">Metros (m)</option>
-            </select>
+          <!-- Costo y Proveedor -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-dollar-sign" style="color: #4CAF50;"></i> Costo unitario *
+              </label>
+              <input type="number" id="costo_unitario" min="0" step="0.01" required 
+                     style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;"
+                     placeholder="0.00">
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #607D8B;">
+              <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px;">
+                <i class="fas fa-truck" style="color: #607D8B;"></i> Proveedor
+              </label>
+              <select id="proveedor_id" 
+                      style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: white;">
+                <option value="">Sin proveedor</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Stock Actual</label>
-            <input type="number" id="stock_actual" value="0" min="0" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-          </div>
-
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Stock Mínimo</label>
-            <input type="number" id="stock_minimo" value="5" min="0" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-          </div>
-
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Costo Unitario *</label>
-            <input type="number" id="costo_unitario" required min="0" step="0.01" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-          </div>
-
-          <div>
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Proveedor</label>
-            <select id="proveedor_id" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-              <option value="">Sin proveedor</option>
-            </select>
+          <!-- Checkbox Orgánico -->
+          <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+              <input type="checkbox" id="es_organico" 
+                     style="width: 20px; height: 20px; cursor: pointer;">
+              <span style="font-weight: 600; color: #2e7d32;">
+                <i class="fas fa-leaf"></i> Producto orgánico certificado
+              </span>
+            </label>
           </div>
         </div>
 
-        <div style="margin: 20px 0;">
-          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-            <input type="checkbox" id="es_organico" style="width: 20px; height: 20px;">
-            <span style="font-weight: bold;">🌱 Producto Orgánico</span>
-          </label>
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button type="button" onclick="cerrarModal()" class="btn-secondary">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar</button>
+        <!-- Botones del formulario -->
+        <div style="display: flex; gap: 10px; margin-top: 25px; justify-content: flex-end;">
+          <button type="button" onclick="cerrarModal()" class="btn-secondary" style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-times"></i> Cancelar
+          </button>
+          <button type="submit" class="btn-primary" style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-save"></i> Guardar Producto
+          </button>
         </div>
       </form>
     </div>
