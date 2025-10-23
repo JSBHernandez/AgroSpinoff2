@@ -162,6 +162,28 @@
           <p style="color: #666; font-size: 14px;">Explora nuestros servicios y soluciones</p>
         </div>
       </div>
+
+      <h3 style="color: #2e7d32; margin-top: 30px; margin-bottom: 15px; border-top: 2px solid #e8f5e9; padding-top: 20px;">🛠️ Administración del Sistema</h3>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div class="dashboard-card" onclick="window.location.href='soporte.html'" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-headset fa-3x" style="color: #c2185b; margin-bottom: 15px;"></i>
+          <h3 style="color: #c2185b; margin-bottom: 10px;">Soporte</h3>
+          <p style="color: #666; font-size: 14px;">Gestión de tickets y solicitudes de soporte</p>
+        </div>
+        
+        <div class="dashboard-card" onclick="verificarAccesoAdmin('panelAdmin.html')" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-chart-line fa-3x" style="color: #c2185b; margin-bottom: 15px;"></i>
+          <h3 style="color: #c2185b; margin-bottom: 10px;">Panel Administrativo</h3>
+          <p style="color: #666; font-size: 14px;">Métricas y estadísticas del sistema (Solo Admin)</p>
+        </div>
+        
+        <div class="dashboard-card" onclick="verificarAccesoAdmin('actividad.html')" style="cursor: pointer; padding: 30px; background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%); border-radius: 10px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+          <i class="fas fa-history fa-3x" style="color: #c2185b; margin-bottom: 15px;"></i>
+          <h3 style="color: #c2185b; margin-bottom: 10px;">Actividad del Sistema</h3>
+          <p style="color: #666; font-size: 14px;">Visualización de logs y eventos (Solo Admin)</p>
+        </div>
+      </div>
     </section>
 
     <!-- Mensaje Institucional -->
@@ -231,6 +253,39 @@
         console.error('Error al obtener proyectos:', error);
       }
       return null;
+    }
+
+    // Función para verificar acceso de administrador (Sprint 6)
+    async function verificarAccesoAdmin(pagina) {
+      try {
+        // Verificar sesión en el servidor
+        const response = await fetch('/api/auth/session', {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        
+        console.log('🔍 verificarAccesoAdmin - Response data:', data);
+        console.log('🔍 data.authenticated:', data.authenticated);
+        console.log('🔍 data.user:', data.user);
+        console.log('🔍 data.user?.rol:', data.user?.rol);
+
+        if (data.authenticated && data.user && data.user.rol === 'administrador') {
+          // Usuario autenticado y es admin
+          console.log('✅ Acceso permitido, redirigiendo a:', pagina);
+          window.location.href = pagina;
+        } else {
+          // No es admin o no está autenticado
+          const rolActual = data.user?.rol || localStorage.getItem('rolUsuario') || 'No definido';
+          console.log('❌ Acceso denegado. Rol actual:', rolActual);
+          alert('⚠️ Acceso Denegado\n\nEsta funcionalidad está disponible solo para administradores del sistema.\n\nTu rol actual es: ' + rolActual);
+        }
+      } catch (error) {
+        console.error('Error al verificar acceso:', error);
+        alert('⚠️ Error al verificar permisos. Por favor, inicia sesión nuevamente.');
+        window.location.href = 'login.html';
+      }
     }
   </script>
   <script>

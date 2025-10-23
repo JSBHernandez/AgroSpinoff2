@@ -27,6 +27,8 @@ const TaskAssignmentModel = require('../models/taskAssignmentModel');
 const ProviderModel = require('../models/providerModel');
 const ProductModel = require('../models/productModel');
 const InventoryModel = require('../models/inventoryModel');
+const TicketModel = require('../models/ticketModel');
+const LogModel = require('../models/logModel');
 
 async function runMigrations() {
   console.log('🚀 Iniciando migraciones de base de datos...\n');
@@ -182,6 +184,12 @@ async function initDatabase() {
     await ProviderModel.createTable();
     await ProductModel.createTable();
     await InventoryModel.createTable();
+
+    // Sprint 6: Avanzado y soporte (RF34, RF36, RF37, RF46)
+    console.log('📦 Sprint 6: Creando tablas de soporte y logs...');
+    await TicketModel.createTable();
+    await LogModel.createTable();
+    console.log('✅ Tablas de soporte creadas\n');
 
   } catch (error) {
     // Si las tablas ya existen, no es error fatal

@@ -11,6 +11,7 @@
  */
 
 const UserModel = require('../models/userModel');
+const LogModel = require('../models/logModel');
 const { verifyPassword, generateToken } = require('../utils/crypto');
 const { createSession, destroySession, getSession } = require('../utils/sessionManager');
 const { isValidEmail, isNotEmpty } = require('../utils/validators');
@@ -97,6 +98,9 @@ class AuthController {
           }
         }));
 
+        // Registrar log de inicio de sesión exitoso
+        await LogModel.logLogin(usuario.id, req.socket.remoteAddress, true);
+
         console.log(`✅ Login exitoso: ${usuario.email}`);
 
       } catch (error) {
@@ -119,8 +123,16 @@ class AuthController {
         .find(row => row.startsWith('sessionId='))
         ?.split('=')[1];
 
+      let userId = null;
       if (sessionId) {
+        const session = getSession(sessionId);
+        userId = session?.id;
         destroySession(sessionId);
+        
+        // Registrar log de cierre de sesión
+        if (userId) {
+          await LogModel.logLogout(userId, req.socket.remoteAddress);
+        }
       }
 
       // Eliminar cookie
@@ -172,7 +184,7 @@ class AuthController {
       res.end(JSON.stringify({
         authenticated: true,
         user: {
-          id: session.userId,
+          id: session.userId,  // ✅ CORRECCIÓN: session tiene 'userId', no 'id'
           email: session.email,
           nombre: session.nombre,
           rol: session.rol

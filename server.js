@@ -30,6 +30,9 @@ const handleProviderRoutes = require('./src/routes/providerRoutes');
 const handleProductRoutes = require('./src/routes/productRoutes');
 const handleInventoryRoutes = require('./src/routes/inventoryRoutes');
 const handleReportRoutes = require('./src/routes/reportRoutes');
+const handleTicketRoutes = require('./src/routes/ticketRoutes');
+const handleLogRoutes = require('./src/routes/logRoutes');
+const handleAdminRoutes = require('./src/routes/adminRoutes');
 const { startSessionCleaner } = require('./src/utils/sessionManager');
 
 // Configuración del servidor
@@ -176,6 +179,24 @@ function handleAPIRoutes(req, res) {
     return;
   }
 
+  // Rutas de tickets (/api/tickets/*) - Sprint 6
+  if (pathname.startsWith('/api/tickets')) {
+    handleTicketRoutes(req, res, url.parse(req.url, true));
+    return;
+  }
+
+  // Rutas de logs (/api/logs/*) - Sprint 6
+  if (pathname.startsWith('/api/logs')) {
+    handleLogRoutes(req, res, url.parse(req.url, true));
+    return;
+  }
+
+  // Rutas de administración (/api/admin/*) - Sprint 6
+  if (pathname.startsWith('/api/admin')) {
+    handleAdminRoutes(req, res, url.parse(req.url, true));
+    return;
+  }
+
   // Ruta API no encontrada
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Ruta API no encontrada' }));
@@ -227,6 +248,14 @@ const server = http.createServer((req, res) => {
     pathname = '/pages/inventario.html';
   } else if (pathname === '/agendaReuniones' || pathname === '/agendaReuniones.html') {
     pathname = '/pages/agendaReuniones.html';
+  } else if (pathname === '/test-sprint6' || pathname === '/test-sprint6.html') {
+    pathname = '/pages/test-sprint6.html';
+  } else if (pathname === '/soporte' || pathname === '/soporte.html') {
+    pathname = '/pages/soporte.html';
+  } else if (pathname === '/panelAdmin' || pathname === '/panelAdmin.html') {
+    pathname = '/pages/panelAdmin.html';
+  } else if (pathname === '/actividad' || pathname === '/actividad.html') {
+    pathname = '/pages/actividad.html';
   } else if (pathname === '/contacto' || pathname === '/contacto.html') {
     pathname = '/pages/contacto.html';
   } else if (pathname === '/mision-vision' || pathname === '/mision-vision.html') {
